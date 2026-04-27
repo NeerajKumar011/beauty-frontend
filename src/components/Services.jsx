@@ -1,6 +1,6 @@
 import API_BASE_URL from "../utils/api";
 import { useEffect, useState } from "react";
-import "../styles/services.css";
+import "../styles/Services.css";
 
 function Services() {
   const [services, setServices] = useState([]);

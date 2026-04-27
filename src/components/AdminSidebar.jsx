@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import "../styles/admin.css";
+import "../styles/Admin.css";
 
 function AdminSidebar() {
   const [collapsed, setCollapsed] =

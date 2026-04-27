@@ -1,4 +1,4 @@
-import "../styles/hero.css";
+import "../styles/Hero.css";
 
 function Hero({ onBookClick }) {
   return (
