@@ -4,7 +4,7 @@ import {
   useState,
 } from "react";
 import AdminSidebar from "../components/AdminSidebar";
-import "../styles/admin.css";
+import "../styles/Admin.css";
 
 function ManageServices() {
   const [services, setServices] =

@@ -1,7 +1,7 @@
 import API_BASE_URL from "../utils/api";
 import { useEffect, useState } from "react";
 import AdminSidebar from "../components/AdminSidebar";
-import "../styles/admin.css";
+import "../styles/Admin.css";
 
 function AdminDashboard() {
   const [summary, setSummary] =
