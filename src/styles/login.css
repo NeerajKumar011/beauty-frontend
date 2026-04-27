@@ -1,0 +1,513 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+/* ============================================================
+   Page Root
+   ============================================================ */
+.login-root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #fff7fb, #fce4ec, #f8bbd0);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Floating blobs ── */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+}
+
+.blob-1 {
+  width: 250px;
+  height: 250px;
+  background: #f8bbd0;
+  top: -80px;
+  left: -80px;
+}
+
+.blob-2 {
+  width: 220px;
+  height: 220px;
+  background: #e1bee7;
+  bottom: -70px;
+  right: -70px;
+}
+
+.blob-3 {
+  width: 180px;
+  height: 180px;
+  background: #f48fb1;
+  top: 45%;
+  right: 10%;
+}
+
+/* ============================================================
+   Login Card
+   ============================================================ */
+.login-card {
+  width: 100%;
+  max-width: 430px;
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(12px);
+  border-radius: 22px;
+  padding: 38px 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Brand ── */
+.brand {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.brand-icon {
+  font-size: 38px;
+  margin-bottom: 8px;
+}
+
+.brand-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #b03060;
+  display: block;
+}
+
+/* ── Headings ── */
+.login-heading {
+  text-align: center;
+  font-size: 28px;
+  color: #222;
+  margin-bottom: 8px;
+}
+
+.login-subtext {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+/* ── Error banner ── */
+.error-banner {
+  background: #ffe5e5;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-bottom: 18px;
+  text-align: center;
+  animation: fadeIn 0.25s ease;
+}
+
+/* ── Form ── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.field-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+}
+
+/* ── Inputs ── */
+.login-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+  color: #222;
+}
+
+.login-input::placeholder {
+  color: #bbb;
+}
+
+.login-input:focus {
+  border-color: #d81b60;
+  box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.12);
+}
+
+/* Match / mismatch states (used in confirm password) */
+.login-input.input-mismatch {
+  border-color: #e53935;
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+}
+
+.login-input.input-match {
+  border-color: #43a047;
+  box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.1);
+}
+
+/* OTP input — centered large text */
+.otp-input {
+  letter-spacing: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ── Password box ── */
+.password-box {
+  position: relative;
+}
+
+.password-box .login-input {
+  padding-right: 64px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #d81b60;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  padding: 4px 0;
+}
+
+.toggle-password:hover {
+  opacity: 0.75;
+}
+
+/* ── Label row (password label + forgot button) ── */
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ── Forgot password button ── */
+.forgot-link-btn {
+  background: none;
+  border: none;
+  color: #d81b60;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+
+.forgot-link-btn:hover {
+  opacity: 0.75;
+}
+
+/* ── Submit button ── */
+.submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #ec407a, #d81b60);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(216, 27, 96, 0.25);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── Button spinner ── */
+.btn-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ── Sign up text ── */
+.signup-text {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 22px;
+  color: #555;
+}
+
+.signup-link {
+  color: #d81b60;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   Forgot Password Modal
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 20px;
+  animation: fadeIn 0.25s ease;
+}
+
+.forgot-modal {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(16px);
+  border-radius: 22px;
+  padding: 36px 28px 30px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Close button ── */
+.close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: #f5f5f5;
+  cursor: pointer;
+  font-size: 14px;
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: #ffe0ec;
+  color: #d81b60;
+}
+
+/* ── Modal brand icon ── */
+.modal-brand-icon {
+  font-size: 32px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* ── Modal heading ── */
+.forgot-modal h2 {
+  font-size: 24px;
+  color: #222;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+/* ── Modal description ── */
+.forgot-modal p {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.forgot-modal p strong {
+  color: #b03060;
+}
+
+/* ── Step indicators ── */
+.step-indicators {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 22px;
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  transition: background 0.3s;
+}
+
+.step-dot.active {
+  background: #d81b60;
+}
+
+.step-line {
+  width: 48px;
+  height: 2px;
+  background: #e0e0e0;
+  margin: 0 6px;
+}
+
+/* ── Field group inside modal ── */
+.forgot-modal .field-group {
+  margin-bottom: 14px;
+}
+
+/* ── Modal actions row (Back + Submit) ── */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.back-btn {
+  flex: 0 0 auto;
+  padding: 13px 18px;
+  border: 1.5px solid #d81b60;
+  background: transparent;
+  color: #d81b60;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.back-btn:hover:not(:disabled) {
+  background: #fff0f5;
+}
+
+.back-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-submit {
+  flex: 1;
+}
+
+/* ── Reset message ── */
+.reset-msg {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 13.5px;
+  color: #c62828;
+  font-weight: 500;
+  background: #ffe5e5;
+  padding: 10px 12px;
+  border-radius: 10px;
+  animation: fadeIn 0.2s ease;
+}
+
+.reset-msg.reset-msg-success {
+  color: #2e7d32;
+  background: #e8f5e9;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 28px 20px;
+  }
+
+  .brand-name {
+    font-size: 20px;
+  }
+
+  .login-heading {
+    font-size: 24px;
+  }
+
+  .forgot-modal {
+    padding: 28px 18px 24px;
+    border-radius: 18px;
+  }
+
+  .forgot-modal h2 {
+    font-size: 21px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .back-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

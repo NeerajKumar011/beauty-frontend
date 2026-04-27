@@ -1,0 +1,310 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:"Poppins",sans-serif;
+}
+
+/* Root */
+.signup-root{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  background:linear-gradient(135deg,#fff7fb,#fde7ef,#f9c6d9);
+  position:relative;
+  overflow:hidden;
+}
+
+/* Floating blobs */
+.blob{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:.35;
+}
+
+.blob-1{
+  width:260px;
+  height:260px;
+  background:#f8bbd0;
+  top:-70px;
+  left:-70px;
+}
+
+.blob-2{
+  width:220px;
+  height:220px;
+  background:#e1bee7;
+  bottom:-60px;
+  right:-60px;
+}
+
+.blob-3{
+  width:180px;
+  height:180px;
+  background:#f48fb1;
+  top:45%;
+  right:12%;
+}
+
+/* Card */
+.signup-card{
+  width:100%;
+  max-width:460px;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(14px);
+  border-radius:24px;
+  padding:38px 32px;
+  box-shadow:0 20px 60px rgba(0,0,0,.12);
+  position:relative;
+  z-index:2;
+}
+
+/* Brand */
+.brand{
+  text-align:center;
+  margin-bottom:22px;
+}
+
+.brand-icon{
+  font-size:38px;
+  margin-bottom:8px;
+}
+
+.brand-name{
+  font-size:24px;
+  font-weight:700;
+  color:#b03060;
+}
+
+/* Heading */
+.signup-heading{
+  text-align:center;
+  font-size:28px;
+  color:#222;
+  margin-bottom:8px;
+}
+
+.signup-subtext{
+  text-align:center;
+  font-size:14px;
+  color:#666;
+  line-height:1.5;
+  margin-bottom:26px;
+}
+
+/* Error */
+.error-banner{
+  background:#ffe5e5;
+  color:#c62828;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:18px;
+  text-align:center;
+  font-size:14px;
+}
+
+/* Form */
+.signup-form{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.field-group{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.field-group label{
+  font-size:14px;
+  font-weight:500;
+  color:#444;
+}
+
+/* Inputs */
+.signup-input{
+  width:100%;
+  padding:13px 14px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font-size:14px;
+  outline:none;
+  transition:.2s;
+}
+
+.signup-input:focus{
+  border-color:#d81b60;
+  box-shadow:0 0 0 3px rgba(216,27,96,.12);
+}
+
+/* Password box */
+.password-box{
+  position:relative;
+}
+
+.toggle-password{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  border:none;
+  background:none;
+  color:#d81b60;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+}
+
+/* Strength text */
+.strength-text{
+  font-size:13px;
+  color:#777;
+  margin-top:6px;
+}
+
+/* Terms */
+.terms-row{
+  font-size:13px;
+  color:#555;
+  line-height:1.5;
+}
+
+.terms-row input{
+  margin-right:8px;
+}
+
+/* Button */
+.submit-btn{
+  background:linear-gradient(135deg,#ec407a,#d81b60);
+  color:#fff;
+  border:none;
+  padding:14px;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.submit-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(216,27,96,.25);
+}
+
+.submit-btn:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
+
+/* Divider */
+.divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:24px 0;
+}
+
+.divider span{
+  flex:1;
+  height:1px;
+  background:#eee;
+}
+
+.divider p{
+  font-size:13px;
+  color:#777;
+}
+
+/* Social */
+.social-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.social-btn{
+  padding:12px;
+  border:1px solid #eee;
+  background:#fff;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:500;
+}
+
+.social-btn:hover{
+  background:#fafafa;
+}
+
+/* Login */
+.login-text{
+  text-align:center;
+  font-size:14px;
+  margin-top:22px;
+  color:#555;
+}
+
+.login-link{
+  color:#d81b60;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* Success screen */
+.success-card{
+  text-align:center;
+}
+
+.success-icon{
+  font-size:50px;
+  margin-bottom:16px;
+}
+
+.success-heading{
+  font-size:28px;
+  margin-bottom:10px;
+  color:#222;
+}
+
+.success-sub{
+  color:#666;
+  line-height:1.6;
+  margin-bottom:24px;
+}
+
+.success-btn{
+  display:inline-block;
+  padding:12px 24px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#ec407a,#d81b60);
+  color:#fff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* Mobile */
+@media(max-width:480px){
+  .signup-card{
+    padding:28px 20px;
+  }
+
+  .social-row{
+    grid-template-columns:1fr;
+  }
+
+  .brand-name{
+    font-size:20px;
+  }
+
+  .signup-heading{
+    font-size:24px;
+  }
+}

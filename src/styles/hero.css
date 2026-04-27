@@ -1,0 +1,71 @@
+.hero {
+  margin-top: 70px;
+}
+.hero {
+  height: 100vh;
+  background: url("https://images.unsplash.com/photo-1560066984-138dadb4c035")
+    center/cover no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.content {
+  position: relative;
+  color: white;
+  text-align: center;
+  max-width: 700px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  margin-bottom: 20px;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+h1 {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+}
+
+h1 span {
+  color: #e8a0b4;
+}
+
+p {
+  margin-bottom: 25px;
+  color: #ddd;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.btn-primary {
+  background: #b8577c;
+  padding: 12px 25px;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid white;
+  padding: 12px 25px;
+  color: white;
+  cursor: pointer;
+}
