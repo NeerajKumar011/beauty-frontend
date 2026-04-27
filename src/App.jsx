@@ -18,8 +18,7 @@ import Analytics from "./pages/Analytics";
 import AvailabilitySettings from "./pages/AvailabilitySettings";
 import Services from "./components/Services";
 import Gallery from "./pages/Gallery";
-import ManageGallery
-from "./pages/ManageGallery";
+import ManageGallery from "./pages/ManageGallery";
 
 function AppContent() {
   const [showBooking, setShowBooking] = useState(false);
