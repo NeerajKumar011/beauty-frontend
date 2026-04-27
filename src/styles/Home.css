@@ -225,6 +225,66 @@ select {
   font-size: 0.92rem;
 }
 
+
+ /* MULTI PHOTO MOVING HERO BACKGROUND */
+
+.modern-hero{
+  position:relative;
+  overflow:hidden;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  align-items:center;
+  gap:60px;
+  padding:120px 7% 80px;
+  isolation:isolate;
+}
+
+/* Moving Background Strip */
+.modern-hero::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:400%;
+  height:100%;
+  z-index:-2;
+
+  background:
+    url("https://res.cloudinary.com/dn0w8f7s1/image/upload/v1777321028/img1_dl10fb.jpg") 0% center/25% 100% no-repeat,
+    url("https://res.cloudinary.com/dn0w8f7s1/image/upload/v1777321029/img2_ectxez.jpg") 25% center/25% 100% no-repeat,
+    url("https://res.cloudinary.com/dn0w8f7s1/image/upload/v1777321028/img3_lnxvlq.jpg") 50% center/25% 100% no-repeat,
+    url("https://res.cloudinary.com/dn0w8f7s1/image/upload/v1777321031/img4_m1poxa.jpg") 75% center/25% 100% no-repeat;
+
+  animation:heroScroll 45s linear infinite;
+}
+
+/* White overlay for readability */
+.modern-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.88),
+      rgba(255,248,252,.72),
+      rgba(255,255,255,.78)
+    );
+}
+
+/* Slow Horizontal Movement */
+@keyframes heroScroll{
+  0%{
+    transform:translateX(0);
+  }
+
+  100%{
+    transform:translateX(-75%);
+  }
+}
 /* ==========================================
    STATS
 ========================================== */
@@ -513,6 +573,8 @@ select {
   .hero-buttons {
     justify-content: center;
   }
+
+ 
 
   .stats-section {
     grid-template-columns: repeat(2, 1fr);
