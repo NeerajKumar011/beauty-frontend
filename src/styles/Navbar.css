@@ -64,8 +64,10 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
 }
 
 .nav-right a,
@@ -74,13 +76,14 @@
   background: transparent;
   text-decoration: none;
   color: var(--nav-text);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-radius: 12px;
   transition: 0.22s ease;
+  white-space: nowrap;
 }
 
 .nav-right a:hover,
@@ -158,9 +161,9 @@
   }
 
   .call-btn,
-  .book-btn {
-    padding: 9px 14px !important;
-  }
+.book-btn{
+  padding: 9px 14px !important;
+}
 }
 
 /* ===============================
