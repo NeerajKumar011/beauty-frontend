@@ -1,4 +1,29 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+/* ==========================================
+   LOGIN.CSS — LUXURY RESPONSIVE SYSTEM
+   Mobile • Tablet • Desktop
+========================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+:root {
+  --pink: #d81b60;
+  --pink2: #ec407a;
+  --pink-soft: #fff0f6;
+  --text: #1e1e25;
+  --muted: #6f6f78;
+  --white: #ffffff;
+  --danger: #e53935;
+  --success: #2e7d32;
+  --border: rgba(0,0,0,0.07);
+  --shadow-sm: 0 14px 36px rgba(0,0,0,0.08);
+  --shadow-md: 0 24px 60px rgba(0,0,0,0.14);
+  --shadow-pink: 0 18px 38px rgba(216,27,96,0.18);
+  --radius: 24px;
+}
+
+/* ==========================================
+   RESET
+========================================== */
 
 * {
   margin: 0;
@@ -10,40 +35,50 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
-/* ============================================================
-   Page Root
-   ============================================================ */
+/* ==========================================
+   ROOT
+========================================== */
+
 .login-root {
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #fff7fb, #fce4ec, #f8bbd0);
-  padding: 20px;
+  padding: 90px 18px 40px;
   position: relative;
   overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at top left, #ffd9ea 0%, transparent 24%),
+    radial-gradient(circle at bottom right, #f3d8ff 0%, transparent 22%),
+    linear-gradient(135deg, #fff8fb, #ffffff);
 }
 
-/* ── Floating blobs ── */
+/* ==========================================
+   BLOBS
+========================================== */
+
 .blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(90px);
   opacity: 0.35;
+  pointer-events: none;
 }
 
 .blob-1 {
-  width: 250px;
-  height: 250px;
-  background: #f8bbd0;
+  width: 260px;
+  height: 260px;
+  background: #ffc0d8;
   top: -80px;
   left: -80px;
 }
 
 .blob-2 {
-  width: 220px;
-  height: 220px;
-  background: #e1bee7;
+  width: 240px;
+  height: 240px;
+  background: #e5c8ff;
   bottom: -70px;
   right: -70px;
 }
@@ -51,198 +86,242 @@ body {
 .blob-3 {
   width: 180px;
   height: 180px;
-  background: #f48fb1;
-  top: 45%;
-  right: 10%;
+  background: #ffb2d1;
+  top: 42%;
+  right: 12%;
 }
 
-/* ============================================================
-   Login Card
-   ============================================================ */
+/* ==========================================
+   CARD
+========================================== */
+
 .login-card {
   width: 100%;
-  max-width: 430px;
-  background: rgba(255, 255, 255, 0.93);
-  backdrop-filter: blur(12px);
-  border-radius: 22px;
-  padding: 38px 32px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  max-width: 460px;
   position: relative;
   z-index: 2;
+
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 30px;
+  padding: clamp(28px, 6vw, 42px);
+
+  box-shadow: var(--shadow-md);
 }
 
-/* ── Brand ── */
+/* ==========================================
+   BRAND
+========================================== */
+
 .brand {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 26px;
 }
 
 .brand-icon {
-  font-size: 38px;
-  margin-bottom: 8px;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+
+  background: linear-gradient(
+    135deg,
+    var(--pink2),
+    var(--pink)
+  );
+  color: #fff;
+  box-shadow: var(--shadow-pink);
 }
 
 .brand-name {
-  font-size: 24px;
-  font-weight: 700;
-  color: #b03060;
   display: block;
+  color: var(--pink);
+  font-size: clamp(1.2rem, 3vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1.2;
 }
 
-/* ── Headings ── */
+/* ==========================================
+   HEADINGS
+========================================== */
+
 .login-heading {
   text-align: center;
-  font-size: 28px;
-  color: #222;
+  font-size: clamp(1.9rem, 5vw, 2.4rem);
+  color: var(--text);
   margin-bottom: 8px;
 }
 
 .login-subtext {
   text-align: center;
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 28px;
-  line-height: 1.5;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  margin-bottom: 26px;
 }
 
-/* ── Error banner ── */
+/* ==========================================
+   ERROR
+========================================== */
+
 .error-banner {
-  background: #ffe5e5;
-  color: #c62828;
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 14px;
   margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: 14px;
   text-align: center;
-  animation: fadeIn 0.25s ease;
+  font-size: 0.92rem;
+  color: var(--danger);
+  background: #ffe9e8;
 }
 
-/* ── Form ── */
+/* ==========================================
+   FORM
+========================================== */
+
 .login-form {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 18px;
 }
 
 .field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+  display: grid;
+  gap: 8px;
 }
 
 .field-group label {
-  font-size: 14px;
-  font-weight: 500;
   color: #444;
+  font-size: 0.92rem;
+  font-weight: 600;
 }
 
-/* ── Inputs ── */
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* ==========================================
+   INPUTS
+========================================== */
+
 .login-input {
   width: 100%;
-  padding: 13px 14px;
-  border: 1.5px solid #ddd;
-  border-radius: 12px;
-  font-size: 14px;
-  font-family: "Poppins", sans-serif;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 50px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px solid #e4e4e8;
   background: #fff;
-  color: #222;
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.2s ease;
 }
 
 .login-input::placeholder {
-  color: #bbb;
+  color: #b8b8bf;
 }
 
 .login-input:focus {
-  border-color: #d81b60;
-  box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.12);
-}
-
-/* Match / mismatch states (used in confirm password) */
-.login-input.input-mismatch {
-  border-color: #e53935;
-  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+  border-color: var(--pink);
+  box-shadow: 0 0 0 4px rgba(216,27,96,0.1);
 }
 
 .login-input.input-match {
   border-color: #43a047;
-  box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.1);
 }
 
-/* OTP input — centered large text */
+.login-input.input-mismatch {
+  border-color: #e53935;
+}
+
 .otp-input {
-  letter-spacing: 6px;
-  font-size: 18px;
-  font-weight: 600;
   text-align: center;
+  letter-spacing: 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
-/* ── Password box ── */
+/* ==========================================
+   PASSWORD
+========================================== */
+
 .password-box {
   position: relative;
 }
 
 .password-box .login-input {
-  padding-right: 64px;
+  padding-right: 74px;
 }
 
 .toggle-password {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   border: none;
   background: none;
+  color: var(--pink);
   cursor: pointer;
-  color: #d81b60;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: "Poppins", sans-serif;
-  padding: 4px 0;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
-.toggle-password:hover {
-  opacity: 0.75;
-}
+/* ==========================================
+   LINKS
+========================================== */
 
-/* ── Label row (password label + forgot button) ── */
-.label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* ── Forgot password button ── */
-.forgot-link-btn {
-  background: none;
+.forgot-link-btn,
+.signup-link {
   border: none;
-  color: #d81b60;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: "Poppins", sans-serif;
+  background: none;
+  color: var(--pink);
   cursor: pointer;
-  padding: 0;
-  transition: opacity 0.2s;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.9rem;
 }
 
-.forgot-link-btn:hover {
-  opacity: 0.75;
+.forgot-link-btn:hover,
+.signup-link:hover {
+  opacity: 0.8;
 }
 
-/* ── Submit button ── */
+.signup-text {
+  margin-top: 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.submit-btn,
+.back-btn {
+  min-height: 50px;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.22s ease;
+}
+
 .submit-btn {
   width: 100%;
-  background: linear-gradient(135deg, #ec407a, #d81b60);
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: "Poppins", sans-serif;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    var(--pink2),
+    var(--pink)
+  );
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -251,11 +330,7 @@ body {
 
 .submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(216, 27, 96, 0.25);
-}
-
-.submit-btn:active:not(:disabled) {
-  transform: translateY(0);
+  box-shadow: var(--shadow-pink);
 }
 
 .submit-btn:disabled {
@@ -263,251 +338,214 @@ body {
   cursor: not-allowed;
 }
 
-/* ── Button spinner ── */
+.back-btn {
+  padding: 0 18px;
+  color: var(--pink);
+  border: 1.5px solid var(--pink);
+  background: transparent;
+}
+
+.back-btn:hover {
+  background: var(--pink-soft);
+}
+
+/* ==========================================
+   SPINNER
+========================================== */
+
 .btn-spinner {
-  display: inline-block;
   width: 18px;
   height: 18px;
-  border: 2.5px solid rgba(255, 255, 255, 0.4);
-  border-top-color: #fff;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  border: 2px solid rgba(255,255,255,0.45);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
 }
 
-/* ── Sign up text ── */
-.signup-text {
-  text-align: center;
-  font-size: 14px;
-  margin-top: 22px;
-  color: #555;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.signup-link {
-  color: #d81b60;
-  text-decoration: none;
-  font-weight: 600;
-}
+/* ==========================================
+   MODAL
+========================================== */
 
-.signup-link:hover {
-  text-decoration: underline;
-}
-
-/* ============================================================
-   Forgot Password Modal
-   ============================================================ */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  padding: 18px;
+
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 999;
-  padding: 20px;
-  animation: fadeIn 0.25s ease;
+  justify-content: center;
+
+  background: rgba(0,0,0,0.52);
+  backdrop-filter: blur(6px);
 }
 
 .forgot-modal {
   width: 100%;
-  max-width: 420px;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(16px);
-  border-radius: 22px;
-  padding: 36px 28px 30px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+  max-width: 460px;
+  background: rgba(255,255,255,0.96);
+  border-radius: 28px;
+  padding: clamp(24px, 5vw, 34px);
+  box-shadow: var(--shadow-md);
   position: relative;
-  animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+  animation: popIn 0.22s ease;
 }
 
-/* ── Close button ── */
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .close-btn {
   position: absolute;
   top: 14px;
   right: 14px;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border: none;
   border-radius: 50%;
-  background: #f5f5f5;
   cursor: pointer;
-  font-size: 14px;
-  color: #444;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
+  background: #f5f5f7;
 }
 
-.close-btn:hover {
-  background: #ffe0ec;
-  color: #d81b60;
-}
-
-/* ── Modal brand icon ── */
 .modal-brand-icon {
-  font-size: 32px;
   text-align: center;
-  margin-bottom: 8px;
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
-/* ── Modal heading ── */
 .forgot-modal h2 {
-  font-size: 24px;
-  color: #222;
-  margin-bottom: 6px;
   text-align: center;
+  font-size: 1.7rem;
+  margin-bottom: 10px;
 }
 
-/* ── Modal description ── */
 .forgot-modal p {
   text-align: center;
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 20px;
-  line-height: 1.5;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 18px;
 }
 
-.forgot-modal p strong {
-  color: #b03060;
-}
+/* ==========================================
+   STEP
+========================================== */
 
-/* ── Step indicators ── */
 .step-indicators {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0;
+  gap: 8px;
   margin-bottom: 22px;
 }
 
 .step-dot {
-  width: 10px;
-  height: 10px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
-  background: #e0e0e0;
-  transition: background 0.3s;
+  background: #ddd;
 }
 
 .step-dot.active {
-  background: #d81b60;
+  background: var(--pink);
 }
 
 .step-line {
-  width: 48px;
+  width: 44px;
   height: 2px;
-  background: #e0e0e0;
-  margin: 0 6px;
+  background: #ddd;
 }
 
-/* ── Field group inside modal ── */
-.forgot-modal .field-group {
-  margin-bottom: 14px;
-}
+/* ==========================================
+   MODAL ACTIONS
+========================================== */
 
-/* ── Modal actions row (Back + Submit) ── */
 .modal-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 120px 1fr;
   gap: 10px;
-  margin-top: 4px;
-}
-
-.back-btn {
-  flex: 0 0 auto;
-  padding: 13px 18px;
-  border: 1.5px solid #d81b60;
-  background: transparent;
-  color: #d81b60;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: "Poppins", sans-serif;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  white-space: nowrap;
-}
-
-.back-btn:hover:not(:disabled) {
-  background: #fff0f5;
-}
-
-.back-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  margin-top: 12px;
 }
 
 .modal-submit {
-  flex: 1;
+  width: 100%;
 }
 
-/* ── Reset message ── */
+/* ==========================================
+   RESET MESSAGE
+========================================== */
+
 .reset-msg {
   margin-top: 14px;
+  padding: 12px;
+  border-radius: 14px;
   text-align: center;
-  font-size: 13.5px;
-  color: #c62828;
-  font-weight: 500;
-  background: #ffe5e5;
-  padding: 10px 12px;
-  border-radius: 10px;
-  animation: fadeIn 0.2s ease;
+  font-size: 0.9rem;
+  color: var(--danger);
+  background: #ffe9e8;
 }
 
-.reset-msg.reset-msg-success {
-  color: #2e7d32;
-  background: #e8f5e9;
+.reset-msg-success {
+  color: var(--success);
+  background: #eaf8eb;
 }
 
-/* ============================================================
-   Animations
-   ============================================================ */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
+/* ==========================================
+   TABLET
+========================================== */
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ============================================================
-   Responsive
-   ============================================================ */
-@media (max-width: 480px) {
-  .login-card {
-    padding: 28px 20px;
+@media (max-width: 768px) {
+  .login-root {
+    padding-top: 86px;
   }
 
-  .brand-name {
-    font-size: 20px;
-  }
-
-  .login-heading {
-    font-size: 24px;
-  }
-
+  .login-card,
   .forgot-modal {
-    padding: 28px 18px 24px;
-    border-radius: 18px;
+    border-radius: 24px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .login-root {
+    padding: 82px 14px 28px;
   }
 
-  .forgot-modal h2 {
-    font-size: 21px;
+  .brand-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 1.55rem;
   }
 
   .modal-actions {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .back-btn {
     width: 100%;
-    text-align: center;
+  }
+
+  .forgot-modal h2 {
+    font-size: 1.45rem;
+  }
+
+  .login-input {
+    min-height: 48px;
+    font-size: 0.92rem;
   }
 }

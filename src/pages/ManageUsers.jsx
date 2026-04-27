@@ -1,6 +1,7 @@
 import API_BASE_URL from "../utils/api";
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import AdminSidebar from "../components/AdminSidebar";
@@ -13,18 +14,41 @@ function ManageUsers() {
   const [search, setSearch] =
     useState("");
 
+  const [loading, setLoading] =
+    useState(true);
+
+  const [msg, setMsg] =
+    useState("");
+
+  const [actionId, setActionId] =
+    useState("");
+
   const token =
-  localStorage.getItem("token") || "";
+    localStorage.getItem(
+      "token"
+    ) || "";
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
     loadUsers();
   }, []);
 
+  /* ======================
+     Load Users
+  ====================== */
   const loadUsers =
     async () => {
       try {
+        setLoading(true);
+        setMsg("");
+
         const res =
-          await fetch(`${API_BASE_URL}/users`,
+          await fetch(
+            `${API_BASE_URL}/users`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -42,85 +66,192 @@ function ManageUsers() {
             ? data
             : []
         );
-      } catch (error) {
-        console.log(error);
+      } catch {
+        setMsg(
+          "Unable to load users."
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
+  /* ======================
+     Block User
+  ====================== */
   const blockUser =
     async (id) => {
-      await fetch(`${API_BASE_URL}/users/${id}/block`,
-        {
-          method:
-            "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      try {
+        setActionId(
+          id
+        );
 
-      loadUsers();
+        await fetch(
+          `${API_BASE_URL}/users/${id}/block`,
+          {
+            method:
+              "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setMsg(
+          "User blocked."
+        );
+
+        loadUsers();
+      } catch {
+        setMsg(
+          "Block action failed."
+        );
+      } finally {
+        setActionId(
+          ""
+        );
+      }
     };
 
+  /* ======================
+     Unblock User
+  ====================== */
   const unblockUser =
     async (id) => {
-      await fetch(`${API_BASE_URL}/users/${id}/unblock`,
-        {
-          method:
-            "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      try {
+        setActionId(
+          id
+        );
 
-      loadUsers();
+        await fetch(
+          `${API_BASE_URL}/users/${id}/unblock`,
+          {
+            method:
+              "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setMsg(
+          "User unblocked."
+        );
+
+        loadUsers();
+      } catch {
+        setMsg(
+          "Unblock action failed."
+        );
+      } finally {
+        setActionId(
+          ""
+        );
+      }
     };
 
+  /* ======================
+     Delete User
+  ====================== */
   const deleteUser =
     async (id) => {
-      if (
-        !window.confirm(
-          "Delete user?"
-        )
-      )
+      const ok =
+        window.confirm(
+          "Delete this user?"
+        );
+
+      if (!ok)
         return;
 
-      await fetch(
-  `${API_BASE_URL}/users/${id}`,
-        {
-          method:
-            "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      try {
+        setActionId(
+          id
+        );
 
-      loadUsers();
+        await fetch(
+          `${API_BASE_URL}/users/${id}`,
+          {
+            method:
+              "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setMsg(
+          "User deleted."
+        );
+
+        loadUsers();
+      } catch {
+        setMsg(
+          "Delete failed."
+        );
+      } finally {
+        setActionId(
+          ""
+        );
+      }
     };
 
+  /* ======================
+     Search
+  ====================== */
   const filtered =
-    users.filter(
-      (u) =>
-        u.name
-          ?.toLowerCase()
-          .includes(
-            (search || "").toLowerCase()
-          ) ||
-        u.email
-          ?.toLowerCase()
-          .includes(
-            (search || "").toLowerCase()
-          )
+    useMemo(() => {
+      if (!search)
+        return users;
+
+      return users.filter(
+        (u) =>
+          u.name
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            ) ||
+          u.email
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            )
+      );
+    }, [
+      users,
+      search,
+    ]);
+
+  /* ======================
+     Helpers
+  ====================== */
+  const formatDate = (
+    value
+  ) => {
+    if (!value)
+      return "-";
+
+    const d =
+      new Date(
+        value
+      );
+
+    return d.toLocaleDateString(
+      "en-IN",
+      {
+        day: "numeric",
+        month:
+          "short",
+        year:
+          "numeric",
+      }
     );
+  };
 
   return (
     <div className="admin-page">
       <AdminSidebar />
 
       <div className="main-content">
-        {/* Top */}
+        {/* Header */}
         <div className="topbar">
           <div>
             <h1>
@@ -135,163 +266,223 @@ function ManageUsers() {
             </p>
           </div>
 
-          <input
-            type="text"
-            className="search-box"
-            placeholder="Search user..."
-            value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target
-                  .value
-              )
-            }
-          />
+          <div className="top-actions">
+            <input
+              type="text"
+              className="search-box"
+              placeholder="Search user..."
+              value={
+                search
+              }
+              onChange={(
+                e
+              ) =>
+                setSearch(
+                  e.target
+                    .value
+                )
+              }
+            />
+
+            <button
+              className="refresh-btn"
+              onClick={
+                loadUsers
+              }
+            >
+              ↻ Refresh
+            </button>
+          </div>
         </div>
 
-        {/* Table */}
+        {/* Users Table */}
         <div className="booking-area">
-          <h2>
-            All Users
-          </h2>
+          <div className="section-head">
+            <div>
+              <h2>
+                All Users
+              </h2>
+
+              <p>
+                {
+                  filtered.length
+                }{" "}
+                results
+              </p>
+            </div>
+
+            <span className="pill-count">
+              {
+                users.length
+              }{" "}
+              Total
+            </span>
+          </div>
 
           <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>
-                    Name
-                  </th>
-                  <th>
-                    Email
-                  </th>
-                  <th>
-                    Joined
-                  </th>
-                  <th>
-                    Bookings
-                  </th>
-                  <th>
-                    Status
-                  </th>
-                  <th>
-                    Actions
-                  </th>
-                </tr>
-              </thead>
+            {msg && (
+              <div className="admin-msg success">
+                {msg}
+              </div>
+            )}
 
-              <tbody>
-                {filtered.map(
-                  (
-                    user,
-                    index
-                  ) => (
-                    <tr
-                      key={
-                        index
-                      }
-                    >
-                      <td>
-                        {user.name}
-                      </td>
+            {loading ? (
+              <div className="loading-box">
+                <div className="mini-loader"></div>
 
-                      <td>
-                        {
-                          user.email
+                <p>
+                  Loading
+                  users...
+                </p>
+              </div>
+            ) : filtered.length ===
+              0 ? (
+              <div className="empty-box">
+                <p>
+                  No users
+                  found.
+                </p>
+              </div>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Name
+                    </th>
+
+                    <th>
+                      Email
+                    </th>
+
+                    <th>
+                      Joined
+                    </th>
+
+                    <th>
+                      Bookings
+                    </th>
+
+                    <th>
+                      Status
+                    </th>
+
+                    <th>
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filtered.map(
+                    (
+                      user,
+                      index
+                    ) => (
+                      <tr
+                        key={
+                          user._id ||
+                          index
                         }
-                      </td>
-
-                      <td>
-                        {new Date(
-                          user.createdAt
-                        ).toLocaleDateString()}
-                      </td>
-
-                      <td>
-                        {
-                          user.bookingsCount
-                        }
-                      </td>
-
-                      <td>
-                        {user.isBlocked ? (
-                          <span
-                            style={{
-                              color:
-                                "red",
-                              fontWeight:
-                                "700",
-                            }}
-                          >
-                            Blocked
-                          </span>
-                        ) : (
-                          <span
-                            style={{
-                              color:
-                                "green",
-                              fontWeight:
-                                "700",
-                            }}
-                          >
-                            Active
-                          </span>
-                        )}
-                      </td>
-
-                      <td>
-                        {user.isBlocked ? (
-                          <button
-                            className="feature-btn"
-                            onClick={() =>
-                              unblockUser(
-                                user._id
-                              )
-                            }
-                          >
-                            Unblock
-                          </button>
-                        ) : (
-                          <button
-                            className="edit-btn"
-                            onClick={() =>
-                              blockUser(
-                                user._id
-                              )
-                            }
-                          >
-                            Block
-                          </button>
-                        )}
-
-                        <button
-                          className="delete-btn"
-                          onClick={() =>
-                            deleteUser(
-                              user._id
-                            )
+                      >
+                        <td>
+                          {
+                            user.name
                           }
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
+                        </td>
 
-            {filtered.length ===
-              0 && (
-              <p
-                style={{
-                  marginTop:
-                    "15px",
-                }}
-              >
-                No users
-                found.
-              </p>
+                        <td>
+                          {
+                            user.email
+                          }
+                        </td>
+
+                        <td>
+                          {formatDate(
+                            user.createdAt
+                          )}
+                        </td>
+
+                        <td>
+                          {user.bookingsCount ||
+                            0}
+                        </td>
+
+                        <td>
+                          <span
+                            className={`status-pill ${
+                              user.isBlocked
+                                ? "red"
+                                : "green"
+                            }`}
+                          >
+                            {user.isBlocked
+                              ? "Blocked"
+                              : "Active"}
+                          </span>
+                        </td>
+
+                        <td>
+                          <div className="action-row">
+                            {user.isBlocked ? (
+                              <button
+                                className="feature-btn"
+                                disabled={
+                                  actionId ===
+                                  user._id
+                                }
+                                onClick={() =>
+                                  unblockUser(
+                                    user._id
+                                  )
+                                }
+                              >
+                                {actionId ===
+                                user._id
+                                  ? "Please wait..."
+                                  : "Unblock"}
+                              </button>
+                            ) : (
+                              <button
+                                className="edit-btn"
+                                disabled={
+                                  actionId ===
+                                  user._id
+                                }
+                                onClick={() =>
+                                  blockUser(
+                                    user._id
+                                  )
+                                }
+                              >
+                                {actionId ===
+                                user._id
+                                  ? "Please wait..."
+                                  : "Block"}
+                              </button>
+                            )}
+
+                            <button
+                              className="delete-btn"
+                              disabled={
+                                actionId ===
+                                user._id
+                              }
+                              onClick={() =>
+                                deleteUser(
+                                  user._id
+                                )
+                              }
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
             )}
           </div>
         </div>

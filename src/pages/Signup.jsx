@@ -1,23 +1,26 @@
 import API_BASE_URL from "../utils/api";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import "../styles/Signup.css";
 
 function Signup() {
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirm: "",
-  });
-
-  const [showPassword, setShowPassword] =
-    useState(false);
-
-  const [showConfirm, setShowConfirm] =
-    useState(false);
+  const [form, setForm] =
+    useState({
+      name: "",
+      email: "",
+      password: "",
+      confirm: "",
+    });
 
   const [loading, setLoading] =
     useState(false);
@@ -25,20 +28,63 @@ function Signup() {
   const [error, setError] =
     useState("");
 
-  /* ---------------- PASSWORD STRENGTH ---------------- */
-  const getStrength = (pw) => {
-    let score = 0;
+  const [success, setSuccess] =
+    useState("");
 
-    if (pw.length >= 8) score++;
-    if (/[A-Z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw)) score++;
-    if (/[^A-Za-z0-9]/.test(pw))
-      score++;
+  const [
+    showPassword,
+    setShowPassword,
+  ] = useState(false);
 
-    return score;
-  };
+  const [
+    showConfirm,
+    setShowConfirm,
+  ] = useState(false);
 
-  const strengthLabel = [
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
+
+  /* ======================
+     Password Strength
+  ====================== */
+  const getStrength =
+    (pw) => {
+      let score = 0;
+
+      if (
+        pw.length >= 8
+      )
+        score++;
+
+      if (
+        /[A-Z]/.test(
+          pw
+        )
+      )
+        score++;
+
+      if (
+        /[0-9]/.test(
+          pw
+        )
+      )
+        score++;
+
+      if (
+        /[^A-Za-z0-9]/.test(
+          pw
+        )
+      )
+        score++;
+
+      return score;
+    };
+
+  const labels = [
     "",
     "Weak",
     "Fair",
@@ -46,128 +92,168 @@ function Signup() {
     "Strong",
   ];
 
-  const pwStrength = getStrength(
-    form.password
-  );
+  const strength =
+    useMemo(
+      () =>
+        getStrength(
+          form.password
+        ),
+      [form.password]
+    );
 
-  /* ---------------- INPUT ---------------- */
-  const handleChange = (e) => {
+  /* ======================
+     Input
+  ====================== */
+  const handleChange = (
+    e
+  ) => {
     setForm({
       ...form,
       [e.target.name]:
         e.target.value,
     });
 
-    if (error) setError("");
-  };
-
-  /* ---------------- SIGNUP ---------------- */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (
-      form.password !==
-      form.confirm
-    ) {
-      setError(
-        "Passwords do not match."
-      );
-      return;
-    }
-
-    if (pwStrength < 2) {
-      setError(
-        "Please choose a stronger password."
-      );
-      return;
-    }
-
-    setLoading(true);
     setError("");
-
-    try {
-      /* STEP 1 - CREATE ACCOUNT */
-      const res = await fetch(`${API_BASE_URL}/signup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            name: form.name,
-            email: form.email.trim(),
-            password:
-              form.password,
-          }),
-        }
-      );
-
-      const data =
-        await res.json();
-
-      if (!res.ok) {
-        setError(
-          data.message ||
-            "Signup failed."
-        );
-        setLoading(false);
-        return;
-      }
-
-      /* STEP 2 - AUTO LOGIN */
-      const loginRes =
-        await fetch(`${API_BASE_URL}/login`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-            body: JSON.stringify({
-              email:
-                form.email,
-              password:
-                form.password,
-            }),
-          }
-        );
-
-      const loginData =
-        await loginRes.json();
-
-      if (!loginRes.ok) {
-        setError(
-          "Account created, but auto login failed."
-        );
-        setLoading(false);
-        return;
-      }
-
-      /* STEP 3 - SAVE SESSION */
-      localStorage.setItem(
-        "token",
-        loginData.token
-      );
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(
-          loginData.user
-        )
-      );
-
-      /* STEP 4 - REDIRECT */
-      navigate("/");
-      window.location.reload();
-    } catch (error) {
-      setError(
-        "Unable to connect. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
+    setSuccess("");
   };
+
+  /* ======================
+     Signup
+  ====================== */
+  const handleSubmit =
+    async (e) => {
+      e.preventDefault();
+
+      setError("");
+      setSuccess("");
+
+      if (
+        form.password !==
+        form.confirm
+      ) {
+        setError(
+          "Passwords do not match."
+        );
+        return;
+      }
+
+      if (
+        strength < 2
+      ) {
+        setError(
+          "Please choose a stronger password."
+        );
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        /* Create */
+        const res =
+          await fetch(
+            `${API_BASE_URL}/signup`,
+            {
+              method:
+                "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify(
+                {
+                  name:
+                    form.name.trim(),
+                  email:
+                    form.email.trim(),
+                  password:
+                    form.password,
+                }
+              ),
+            }
+          );
+
+        const data =
+          await res.json();
+
+        if (!res.ok) {
+          setError(
+            data.message ||
+              "Signup failed."
+          );
+          return;
+        }
+
+        /* Auto Login */
+        const loginRes =
+          await fetch(
+            `${API_BASE_URL}/login`,
+            {
+              method:
+                "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify(
+                {
+                  email:
+                    form.email.trim(),
+                  password:
+                    form.password,
+                }
+              ),
+            }
+          );
+
+        const loginData =
+          await loginRes.json();
+
+        if (
+          !loginRes.ok
+        ) {
+          setSuccess(
+            "Account created. Please login."
+          );
+
+          setTimeout(
+            () =>
+              navigate(
+                "/login"
+              ),
+            1500
+          );
+
+          return;
+        }
+
+        localStorage.setItem(
+          "token",
+          loginData.token
+        );
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify(
+            loginData.user
+          )
+        );
+
+        navigate("/");
+        window.location.reload();
+      } catch {
+        setError(
+          "Unable to connect. Please try again."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+  const passwordsMatch =
+    form.confirm &&
+    form.password ===
+      form.confirm;
 
   return (
     <div className="signup-root">
@@ -183,31 +269,43 @@ function Signup() {
           </div>
 
           <span className="brand-name">
-            Neha Beauty Parlour
+            Neha Beauty
+            Parlour
           </span>
         </div>
 
         {/* Heading */}
         <h1 className="signup-heading">
-          Create Your Account
+          Create Your
+          Account
         </h1>
 
         <p className="signup-subtext">
           Join us to book
-          appointments and enjoy
-          premium beauty services
+          appointments
+          and enjoy a
+          premium beauty
+          experience.
         </p>
 
-        {/* Error */}
+        {/* Alerts */}
         {error && (
           <div className="error-banner">
             {error}
           </div>
         )}
 
+        {success && (
+          <div className="success-banner">
+            {success}
+          </div>
+        )}
+
         {/* Form */}
         <form
-          onSubmit={handleSubmit}
+          onSubmit={
+            handleSubmit
+          }
           className="signup-form"
         >
           {/* Name */}
@@ -221,7 +319,9 @@ function Signup() {
               name="name"
               required
               placeholder="Enter full name"
-              value={form.name}
+              value={
+                form.name
+              }
               onChange={
                 handleChange
               }
@@ -232,7 +332,8 @@ function Signup() {
           {/* Email */}
           <div className="field-group">
             <label>
-              Email Address
+              Email
+              Address
             </label>
 
             <input
@@ -240,7 +341,9 @@ function Signup() {
               name="email"
               required
               placeholder="Enter email"
-              value={form.email}
+              value={
+                form.email
+              }
               onChange={
                 handleChange
               }
@@ -289,11 +392,13 @@ function Signup() {
             </div>
 
             {form.password && (
-              <p className="strength-text">
+              <p
+                className={`strength-text strength-${strength}`}
+              >
                 Strength:{" "}
                 {
-                  strengthLabel[
-                    pwStrength
+                  labels[
+                    strength
                   ]
                 }
               </p>
@@ -303,7 +408,8 @@ function Signup() {
           {/* Confirm */}
           <div className="field-group">
             <label>
-              Confirm Password
+              Confirm
+              Password
             </label>
 
             <div className="password-box">
@@ -322,7 +428,11 @@ function Signup() {
                 onChange={
                   handleChange
                 }
-                className="signup-input"
+                className={`signup-input ${
+                  passwordsMatch
+                    ? "input-match"
+                    : ""
+                }`}
               />
 
               <button
@@ -348,20 +458,29 @@ function Signup() {
                 type="checkbox"
                 required
               />{" "}
-              I agree to Terms &
-              Privacy Policy
+              I agree to
+              Terms &
+              Privacy
+              Policy
             </label>
           </div>
 
-          {/* Button */}
+          {/* Submit */}
           <button
             type="submit"
             className="submit-btn"
-            disabled={loading}
+            disabled={
+              loading
+            }
           >
-            {loading
-              ? "Creating Account..."
-              : "Create Account"}
+            {loading ? (
+              <>
+                <span className="btn-spinner"></span>
+                Creating...
+              </>
+            ) : (
+              "Create Account"
+            )}
           </button>
         </form>
 

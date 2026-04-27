@@ -1,160 +1,202 @@
 /* ===================================
-   FINAL PREMIUM RESPONSIVE NAVBAR
+   LUXURY RESPONSIVE NAVBAR SYSTEM
+   Mobile • Tablet • Desktop • Wide
 =================================== */
 
+:root {
+  --nav-pink: #e91e63;
+  --nav-pink-dark: #c2185b;
+  --nav-text: #222;
+  --nav-muted: #666;
+  --nav-border: rgba(0, 0, 0, 0.06);
+  --nav-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  --nav-radius: 18px;
+}
+
+/* ===============================
+   Main Navbar
+================================ */
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 1000;
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-  padding: 10px 0;
+  z-index: 1200;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: var(--nav-shadow);
 }
 
 .nav-container {
-  max-width: 1400px;
+  width: min(100%, 1440px);
   margin: 0 auto;
-  padding: 0 28px;
+  padding: 14px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 18px;
 }
 
-/* Logo */
+/* ===============================
+   Logo
+================================ */
 .logo {
   text-decoration: none;
-  color: #e91e63;
-  font-size: 28px;
+  color: var(--nav-pink);
+  font-size: clamp(1.1rem, 2vw, 1.7rem);
   font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
   white-space: nowrap;
-  letter-spacing: -0.4px;
-  transition: 0.3s;
+  transition: 0.25s ease;
+  flex-shrink: 0;
 }
 
 .logo:hover {
-  color: #c2185b;
+  color: var(--nav-pink-dark);
+  transform: translateY(-1px);
 }
 
-/* Menu */
+/* ===============================
+   Desktop Menu
+================================ */
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .nav-right a,
 .nav-right button {
-  background: none;
   border: none;
+  background: transparent;
   text-decoration: none;
-  color: #333;
-  font-size: 14px;
+  color: var(--nav-text);
+  font-size: 0.95rem;
   font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: 0.25s ease;
   font-family: inherit;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 12px;
+  transition: 0.22s ease;
 }
 
 .nav-right a:hover,
 .nav-right button:hover {
-  color: #e91e63;
+  color: var(--nav-pink);
+  background: rgba(233, 30, 99, 0.06);
 }
 
-/* Logout */
+/* ===============================
+   Buttons
+================================ */
 .logout-btn {
-  color: #e91e63 !important;
+  color: var(--nav-pink) !important;
   font-weight: 700 !important;
 }
 
-/* Call */
 .call-btn {
   background: #22c55e !important;
   color: #fff !important;
-  padding: 8px 14px !important;
-  border-radius: 30px;
+  border-radius: 999px !important;
+  padding: 10px 16px !important;
   font-weight: 700 !important;
 }
 
 .call-btn:hover {
   background: #16a34a !important;
+  color: #fff !important;
   transform: translateY(-1px);
 }
 
-/* Book */
 .book-btn {
-  background: linear-gradient(
-    135deg,
-    #ff4f93,
-    #e91e63
-  );
-  color: white !important;
-  padding: 8px 16px;
-  border-radius: 30px;
-  font-weight: 700;
+  background: linear-gradient(135deg, #ff5fa0, #e91e63) !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  padding: 10px 16px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 22px rgba(233, 30, 99, 0.18);
 }
 
 .book-btn:hover {
+  color: #fff !important;
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(233,30,99,0.22);
 }
 
-/* Toggle Hidden Desktop */
+/* ===============================
+   Mobile Toggle
+================================ */
 .menu-toggle {
   display: none;
+  border: none;
+  background: transparent;
+  color: var(--nav-pink);
+  font-size: 1.9rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
 }
 
 /* ===============================
    Tablet
 ================================ */
 @media (max-width: 1100px) {
-  .logo {
-    font-size: 24px;
+  .nav-container {
+    padding: 12px 18px;
   }
 
   .nav-right {
-    gap: 10px;
+    gap: 6px;
   }
 
   .nav-right a,
   .nav-right button {
-    font-size: 13px;
+    font-size: 0.9rem;
+    padding: 9px 10px;
+  }
+
+  .call-btn,
+  .book-btn {
+    padding: 9px 14px !important;
   }
 }
 
 /* ===============================
-   Mobile Menu
+   Mobile / App Layout
 ================================ */
 @media (max-width: 768px) {
   .nav-container {
+    padding: 14px 16px;
+    gap: 12px;
     flex-wrap: wrap;
-    padding: 0 16px;
-  }
-
-  .logo {
-    font-size: 22px;
   }
 
   .menu-toggle {
     display: block;
-    border: none;
-    background: none;
-    font-size: 28px;
-    color: #e91e63;
-    cursor: pointer;
+    margin-left: auto;
+  }
+
+  .logo {
+    max-width: calc(100% - 60px);
+    white-space: normal;
+    font-size: 1.2rem;
   }
 
   .nav-right {
     display: none;
     width: 100%;
+    margin-top: 6px;
+    padding: 14px;
+    border-radius: var(--nav-radius);
+    background: #fff;
+    border: 1px solid var(--nav-border);
+    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.08);
+
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding-top: 14px;
+    align-items: stretch;
+    gap: 8px;
   }
 
   .nav-right.open {
@@ -163,29 +205,58 @@
 
   .nav-right a,
   .nav-right button {
-    font-size: 14px;
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 0.97rem;
+    padding: 12px 14px;
+    border-radius: 12px;
   }
 
   .call-btn,
   .book-btn {
-    padding: 8px 14px !important;
+    text-align: center !important;
+    justify-content: center !important;
   }
 }
 
 /* ===============================
-   Small Mobile
+   Small Phones
 ================================ */
 @media (max-width: 480px) {
+  .nav-container {
+    padding: 12px 14px;
+  }
+
   .logo {
-    font-size: 19px;
+    font-size: 1.05rem;
   }
 
   .menu-toggle {
-    font-size: 24px;
+    font-size: 1.65rem;
+  }
+
+  .nav-right {
+    padding: 12px;
   }
 
   .nav-right a,
   .nav-right button {
-    font-size: 13px;
+    font-size: 0.92rem;
+    padding: 11px 12px;
+  }
+}
+
+/* ===============================
+   Large Screens
+================================ */
+@media (min-width: 1500px) {
+  .nav-container {
+    padding-inline: 10px;
+  }
+
+  .nav-right a,
+  .nav-right button {
+    font-size: 1rem;
   }
 }

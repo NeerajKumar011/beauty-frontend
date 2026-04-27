@@ -1,6 +1,7 @@
 import API_BASE_URL from "../utils/api";
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import AdminSidebar from "../components/AdminSidebar";
@@ -13,19 +14,44 @@ function ManageBookings() {
   const [search, setSearch] =
     useState("");
 
+  const [loading, setLoading] =
+    useState(true);
+
+  const [msg, setMsg] =
+    useState("");
+
+  const [updatingId, setUpdatingId] =
+    useState("");
+
+  const [deletingId, setDeletingId] =
+    useState("");
+
   const token =
-  localStorage.getItem("token") || "";
+    localStorage.getItem(
+      "token"
+    ) || "";
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
     loadBookings();
   }, []);
 
+  /* ======================
+     Load Bookings
+  ====================== */
   const loadBookings =
     async () => {
       try {
+        setLoading(true);
+        setMsg("");
+
         const res =
           await fetch(
-  `${API_BASE_URL}/bookings`,
+            `${API_BASE_URL}/bookings`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -43,78 +69,222 @@ function ManageBookings() {
             ? data
             : []
         );
-      } catch (error) {
-        console.log(error);
+      } catch {
+        setMsg(
+          "Unable to load bookings."
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
+  /* ======================
+     Update Status
+  ====================== */
   const updateStatus =
     async (
       id,
       status
     ) => {
-      await fetch(`${API_BASE_URL}/bookings/${id}`,
-        {
-          method:
-            "PUT",
-          headers: {
-            "Content-Type":
-              "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(
-            { status }
-          ),
-        }
-      );
+      try {
+        setUpdatingId(
+          id
+        );
 
-      loadBookings();
+        await fetch(
+          `${API_BASE_URL}/bookings/${id}`,
+          {
+            method:
+              "PUT",
+            headers: {
+              "Content-Type":
+                "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(
+              { status }
+            ),
+          }
+        );
+
+        loadBookings();
+      } catch {
+        setMsg(
+          "Status update failed."
+        );
+      } finally {
+        setUpdatingId(
+          ""
+        );
+      }
     };
 
+  /* ======================
+     Delete Booking
+  ====================== */
   const deleteBooking =
     async (id) => {
-      if (
-        !window.confirm(
-          "Delete booking?"
-        )
-      )
+      const ok =
+        window.confirm(
+          "Delete this booking?"
+        );
+
+      if (!ok)
         return;
 
-      await fetch(
-  `${API_BASE_URL}/bookings/${id}`,
-        {
-          method:
-            "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      try {
+        setDeletingId(
+          id
+        );
 
-      loadBookings();
+        await fetch(
+          `${API_BASE_URL}/bookings/${id}`,
+          {
+            method:
+              "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        loadBookings();
+      } catch {
+        setMsg(
+          "Delete failed."
+        );
+      } finally {
+        setDeletingId(
+          ""
+        );
+      }
     };
 
+  /* ======================
+     Search
+  ====================== */
   const filtered =
-    bookings.filter(
-      (item) =>
-        item.name
-          ?.toLowerCase()
-          .includes(
-            (search || "").toLowerCase()
-          ) ||
-        item.service
-          ?.toLowerCase()
-          .includes(
-            (search || "").toLowerCase()
-          )
+    useMemo(() => {
+      if (!search)
+        return bookings;
+
+      return bookings.filter(
+        (item) =>
+          item.name
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            ) ||
+          item.service
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            ) ||
+          item.date
+            ?.includes(
+              search
+            )
+      );
+    }, [
+      bookings,
+      search,
+    ]);
+
+  /* ======================
+     Helpers
+  ====================== */
+  const formatDate = (
+    value
+  ) => {
+    if (!value)
+      return "-";
+
+    const d =
+      new Date(
+        value
+      );
+
+    if (
+      isNaN(d)
+    )
+      return value;
+
+    return d.toLocaleDateString(
+      "en-IN",
+      {
+        day: "numeric",
+        month:
+          "short",
+        year:
+          "numeric",
+      }
     );
+  };
+
+  const formatTime = (
+    value
+  ) => {
+    if (!value)
+      return "-";
+
+    const [h, m] =
+      value.split(
+        ":"
+      );
+
+    const hour =
+      parseInt(h);
+
+    const ampm =
+      hour >= 12
+        ? "PM"
+        : "AM";
+
+    const finalHour =
+      hour % 12 ===
+      0
+        ? 12
+        : hour % 12;
+
+    return `${finalHour}:${m} ${ampm}`;
+  };
+
+  const statusClass = (
+    status
+  ) => {
+    const s =
+      (
+        status ||
+        "Pending"
+      ).toLowerCase();
+
+    if (
+      s ===
+      "confirmed"
+    )
+      return "green";
+
+    if (
+      s ===
+      "completed"
+    )
+      return "blue";
+
+    if (
+      s ===
+      "cancelled"
+    )
+      return "red";
+
+    return "yellow";
+  };
 
   return (
     <div className="admin-page">
       <AdminSidebar />
 
       <div className="main-content">
-        {/* Top */}
+        {/* Header */}
         <div className="topbar">
           <div>
             <h1>
@@ -130,147 +300,226 @@ function ManageBookings() {
             </p>
           </div>
 
-          <input
-            type="text"
-            className="search-box"
-            placeholder="Search booking..."
-            value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target
-                  .value
-              )
-            }
-          />
+          <div className="top-actions">
+            <input
+              type="text"
+              className="search-box"
+              placeholder="Search booking..."
+              value={
+                search
+              }
+              onChange={(
+                e
+              ) =>
+                setSearch(
+                  e.target
+                    .value
+                )
+              }
+            />
+
+            <button
+              className="refresh-btn"
+              onClick={
+                loadBookings
+              }
+            >
+              ↻ Refresh
+            </button>
+          </div>
         </div>
 
         {/* Table */}
         <div className="booking-area">
-          <h2>
-            All Bookings
-          </h2>
+          <div className="section-head">
+            <div>
+              <h2>
+                All
+                Bookings
+              </h2>
+
+              <p>
+                {
+                  filtered.length
+                }{" "}
+                results
+                found
+              </p>
+            </div>
+
+            <span className="pill-count">
+              {
+                bookings.length
+              }{" "}
+              Total
+            </span>
+          </div>
 
           <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>
-                    Name
-                  </th>
-                  <th>
-                    Service
-                  </th>
-                  <th>
-                    Date
-                  </th>
-                  <th>
-                    Time
-                  </th>
-                  <th>
-                    Status
-                  </th>
-                  <th>
-                    Actions
-                  </th>
-                </tr>
-              </thead>
+            {msg && (
+              <div className="admin-msg error">
+                {msg}
+              </div>
+            )}
 
-              <tbody>
-                {filtered.map(
-                  (
-                    item,
-                    index
-                  ) => (
-                    <tr
-                      key={
-                        index
-                      }
-                    >
-                      <td>
-                        {
-                          item.name
+            {loading ? (
+              <div className="loading-box">
+                <div className="mini-loader"></div>
+
+                <p>
+                  Loading
+                  bookings...
+                </p>
+              </div>
+            ) : filtered.length ===
+              0 ? (
+              <div className="empty-box">
+                <p>
+                  No
+                  bookings
+                  found.
+                </p>
+              </div>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Customer
+                    </th>
+
+                    <th>
+                      Service
+                    </th>
+
+                    <th>
+                      Date
+                    </th>
+
+                    <th>
+                      Time
+                    </th>
+
+                    <th>
+                      Status
+                    </th>
+
+                    <th>
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filtered.map(
+                    (
+                      item,
+                      index
+                    ) => (
+                      <tr
+                        key={
+                          item._id ||
+                          index
                         }
-                      </td>
-
-                      <td>
-                        {
-                          item.service
-                        }
-                      </td>
-
-                      <td>
-                        {
-                          item.date
-                        }
-                      </td>
-
-                      <td>
-                        {
-                          item.time
-                        }
-                      </td>
-
-                      <td>
-                        <select
-                          value={
-                            item.status ||
-                            "Pending"
+                      >
+                        <td>
+                          {
+                            item.name
                           }
-                          onChange={(
-                            e
-                          ) =>
-                            updateStatus(
-                              item._id,
-                              e
-                                .target
-                                .value
-                            )
-                          }
-                        >
-                          <option>
-                            Pending
-                          </option>
-                          <option>
-                            Confirmed
-                          </option>
-                          <option>
-                            Completed
-                          </option>
-                          <option>
-                            Cancelled
-                          </option>
-                        </select>
-                      </td>
+                        </td>
 
-                      <td>
-                        <button
-                          className="delete-btn"
-                          onClick={() =>
-                            deleteBooking(
+                        <td>
+                          {
+                            item.service
+                          }
+                        </td>
+
+                        <td>
+                          {formatDate(
+                            item.date
+                          )}
+                        </td>
+
+                        <td>
+                          {formatTime(
+                            item.time
+                          )}
+                        </td>
+
+                        <td>
+                          <span
+                            className={`status-pill ${statusClass(
+                              item.status
+                            )}`}
+                          >
+                            {item.status ||
+                              "Pending"}
+                          </span>
+                        </td>
+
+                        <td>
+                          <div className="action-row">
+                            <select
+                              value={
+                                item.status ||
+                                "Pending"
+                              }
+                              disabled={
+                                updatingId ===
+                                item._id
+                              }
+                              onChange={(
+                                e
+                              ) =>
+                                updateStatus(
+                                  item._id,
+                                  e
+                                    .target
+                                    .value
+                                )
+                              }
+                            >
+                              <option>
+                                Pending
+                              </option>
+
+                              <option>
+                                Confirmed
+                              </option>
+
+                              <option>
+                                Completed
+                              </option>
+
+                              <option>
+                                Cancelled
+                              </option>
+                            </select>
+
+                            <button
+                              className="delete-btn"
+                              disabled={
+                                deletingId ===
+                                item._id
+                              }
+                              onClick={() =>
+                                deleteBooking(
+                                  item._id
+                                )
+                              }
+                            >
+                              {deletingId ===
                               item._id
-                            )
-                          }
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-
-            {filtered.length ===
-              0 && (
-              <p
-                style={{
-                  marginTop:
-                    "15px",
-                }}
-              >
-                No bookings
-                found.
-              </p>
+                                ? "Deleting..."
+                                : "Delete"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
             )}
           </div>
         </div>

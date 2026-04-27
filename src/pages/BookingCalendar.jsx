@@ -1,6 +1,7 @@
 import API_BASE_URL from "../utils/api";
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import AdminSidebar from "../components/AdminSidebar";
@@ -34,8 +35,26 @@ function BookingCalendar() {
   const [loading, setLoading] =
     useState(false);
 
+  const [updatingId, setUpdatingId] =
+    useState("");
+
+  const [search, setSearch] =
+    useState("");
+
+  const [msg, setMsg] =
+    useState("");
+
   const token =
-  localStorage.getItem("token") || "";
+    localStorage.getItem(
+      "token"
+    ) || "";
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, []);
 
   useEffect(() => {
     loadBookings(
@@ -43,14 +62,18 @@ function BookingCalendar() {
     );
   }, [selectedDate]);
 
+  /* ======================
+     Load Bookings
+  ====================== */
   const loadBookings =
     async (date) => {
       setLoading(true);
+      setMsg("");
 
       try {
         const res =
           await fetch(
-  `${API_BASE_URL}/bookings/date/${date}`,
+            `${API_BASE_URL}/bookings/date/${date}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -59,9 +82,11 @@ function BookingCalendar() {
           );
 
         const data =
-  await res.json().catch(
-    () => []
-  );
+          await res
+            .json()
+            .catch(
+              () => []
+            );
 
         setBookings(
           Array.isArray(
@@ -70,38 +95,143 @@ function BookingCalendar() {
             ? data
             : []
         );
-      } catch (error) {
-        console.log(error);
+      } catch {
+        setMsg(
+          "Unable to load bookings."
+        );
       } finally {
         setLoading(false);
       }
     };
 
+  /* ======================
+     Update Status
+  ====================== */
   const updateStatus =
     async (
       id,
       status
     ) => {
-      await fetch(
-  `${API_BASE_URL}/bookings/${id}/status`,
-        {
-          method:
-            "PUT",
-          headers: {
-            "Content-Type":
-              "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(
-            { status }
-          ),
-        }
+      try {
+        setUpdatingId(
+          id
+        );
+
+        await fetch(
+          `${API_BASE_URL}/bookings/${id}/status`,
+          {
+            method:
+              "PUT",
+            headers: {
+              "Content-Type":
+                "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(
+              { status }
+            ),
+          }
+        );
+
+        loadBookings(
+          selectedDate
+        );
+      } catch {
+        setMsg(
+          "Status update failed."
+        );
+      } finally {
+        setUpdatingId(
+          ""
+        );
+      }
+    };
+
+  /* ======================
+     Search
+  ====================== */
+  const filteredBookings =
+    useMemo(() => {
+      if (!search)
+        return bookings;
+
+      return bookings.filter(
+        (item) =>
+          item.name
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            ) ||
+          item.service
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            ) ||
+          item.time
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            )
+      );
+    }, [
+      bookings,
+      search,
+    ]);
+
+  /* ======================
+     Format
+  ====================== */
+  const formatDate = (
+    date
+  ) => {
+    const d =
+      new Date(
+        date
       );
 
-      loadBookings(
-        selectedDate
-      );
-    };
+    return d.toLocaleDateString(
+      "en-IN",
+      {
+        weekday:
+          "long",
+        day: "numeric",
+        month:
+          "long",
+        year:
+          "numeric",
+      }
+    );
+  };
+
+  const statusClass = (
+    status
+  ) => {
+    const s =
+      (
+        status ||
+        "Pending"
+      ).toLowerCase();
+
+    if (
+      s ===
+      "confirmed"
+    )
+      return "green";
+
+    if (
+      s ===
+      "completed"
+    )
+      return "blue";
+
+    if (
+      s ===
+      "cancelled"
+    )
+      return "red";
+
+    return "yellow";
+  };
 
   return (
     <div className="admin-page">
@@ -119,84 +249,131 @@ function BookingCalendar() {
             <p>
               Daily salon
               planner &
-              appointments
+              appointment
+              management
             </p>
           </div>
+
+          <button
+            className="refresh-btn"
+            onClick={() =>
+              loadBookings(
+                selectedDate
+              )
+            }
+          >
+            ↻ Refresh
+          </button>
         </div>
 
         {/* Controls */}
-        <div className="table-wrap">
-          <div
-            style={{
-              display:
-                "flex",
-              gap: "10px",
-              flexWrap:
-                "wrap",
-              marginBottom:
-                "20px",
-            }}
-          >
-            <input
-              type="date"
-              value={
-                selectedDate
-              }
-              onChange={(
-                e
-              ) =>
-                setSelectedDate(
-                  e.target
-                    .value
-                )
-              }
-            />
+        <div className="booking-area">
+          <div className="section-head">
+            <div>
+              <h2>
+                Manage Day
+              </h2>
 
-            <button
-              className="book-btn"
-              onClick={() =>
-                setSelectedDate(
-                  today
-                )
-              }
-            >
-              Today
-            </button>
+              <p>
+                {
+                  formatDate(
+                    selectedDate
+                  )
+                }
+              </p>
+            </div>
 
-            <button
-              className="feature-btn"
-              onClick={() =>
-                setSelectedDate(
-                  tomorrow
-                )
-              }
-            >
-              Tomorrow
-            </button>
+            <span className="pill-count">
+              {
+                filteredBookings.length
+              }{" "}
+              Bookings
+            </span>
           </div>
 
-          <h2>
-            Bookings for{" "}
-            {
-              selectedDate
-            }
-          </h2>
-        </div>
-
-        {/* Bookings */}
-        <div className="booking-area">
           <div className="table-wrap">
+            <div className="calendar-controls">
+              <input
+                type="date"
+                value={
+                  selectedDate
+                }
+                onChange={(
+                  e
+                ) =>
+                  setSelectedDate(
+                    e.target
+                      .value
+                  )
+                }
+              />
+
+              <button
+                className="book-btn"
+                onClick={() =>
+                  setSelectedDate(
+                    today
+                  )
+                }
+              >
+                Today
+              </button>
+
+              <button
+                className="feature-btn"
+                onClick={() =>
+                  setSelectedDate(
+                    tomorrow
+                  )
+                }
+              >
+                Tomorrow
+              </button>
+
+              <input
+                type="text"
+                className="search-box"
+                placeholder="Search..."
+                value={
+                  search
+                }
+                onChange={(
+                  e
+                ) =>
+                  setSearch(
+                    e.target
+                      .value
+                  )
+                }
+              />
+            </div>
+
+            {msg && (
+              <div className="admin-msg error">
+                {msg}
+              </div>
+            )}
+
+            {/* Table */}
             {loading ? (
-              <p>
-                Loading...
-              </p>
-            ) : bookings.length ===
+              <div className="loading-box">
+                <div className="mini-loader"></div>
+
+                <p>
+                  Loading
+                  bookings...
+                </p>
+              </div>
+            ) : filteredBookings.length ===
               0 ? (
-              <p>
-                No bookings
-                for this
-                date.
-              </p>
+              <div className="empty-box">
+                <p>
+                  No
+                  bookings
+                  for this
+                  date.
+                </p>
+              </div>
             ) : (
               <table>
                 <thead>
@@ -205,7 +382,7 @@ function BookingCalendar() {
                       Time
                     </th>
                     <th>
-                      Name
+                      Customer
                     </th>
                     <th>
                       Service
@@ -214,19 +391,20 @@ function BookingCalendar() {
                       Status
                     </th>
                     <th>
-                      Action
+                      Update
                     </th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {bookings.map(
+                  {filteredBookings.map(
                     (
                       item,
                       index
                     ) => (
                       <tr
                         key={
+                          item._id ||
                           index
                         }
                       >
@@ -249,15 +427,25 @@ function BookingCalendar() {
                         </td>
 
                         <td>
-                          {
-                            item.status
-                          }
+                          <span
+                            className={`status-pill ${statusClass(
+                              item.status
+                            )}`}
+                          >
+                            {item.status ||
+                              "Pending"}
+                          </span>
                         </td>
 
                         <td>
                           <select
                             value={
-                              item.status
+                              item.status ||
+                              "Pending"
+                            }
+                            disabled={
+                              updatingId ===
+                              item._id
                             }
                             onChange={(
                               e
@@ -273,12 +461,15 @@ function BookingCalendar() {
                             <option>
                               Pending
                             </option>
+
                             <option>
                               Confirmed
                             </option>
+
                             <option>
                               Completed
                             </option>
+
                             <option>
                               Cancelled
                             </option>

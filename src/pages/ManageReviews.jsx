@@ -1,6 +1,7 @@
 import API_BASE_URL from "../utils/api";
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import AdminSidebar from "../components/AdminSidebar";
@@ -10,19 +11,44 @@ function ManageReviews() {
   const [reviews, setReviews] =
     useState([]);
 
+  const [loading, setLoading] =
+    useState(true);
+
+  const [search, setSearch] =
+    useState("");
+
+  const [msg, setMsg] =
+    useState("");
+
+  const [actionId, setActionId] =
+    useState("");
+
   const token =
-  localStorage.getItem("token") || "";
+    localStorage.getItem(
+      "token"
+    ) || "";
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
     loadReviews();
   }, []);
 
+  /* ======================
+     Load Reviews
+  ====================== */
   const loadReviews =
     async () => {
       try {
+        setLoading(true);
+        setMsg("");
+
         const res =
           await fetch(
-  `${API_BASE_URL}/admin/reviews`,
+            `${API_BASE_URL}/admin/reviews`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -40,56 +66,130 @@ function ManageReviews() {
             ? data
             : []
         );
-      } catch (error) {
-        console.log(error);
+      } catch {
+        setMsg(
+          "Unable to load reviews."
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
+  /* ======================
+     Delete Review
+  ====================== */
   const deleteReview =
     async (id) => {
-      if (
-        !window.confirm(
-          "Delete review?"
-        )
-      )
+      const ok =
+        window.confirm(
+          "Delete this review?"
+        );
+
+      if (!ok)
         return;
 
-      await fetch(
-  `${API_BASE_URL}/reviews/${id}`,
-        {
-          method:
-            "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      try {
+        setActionId(
+          id
+        );
 
-      loadReviews();
+        await fetch(
+          `${API_BASE_URL}/reviews/${id}`,
+          {
+            method:
+              "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        loadReviews();
+      } catch {
+        setMsg(
+          "Delete failed."
+        );
+      } finally {
+        setActionId(
+          ""
+        );
+      }
     };
 
+  /* ======================
+     Feature Review
+  ====================== */
   const featureReview =
     async (id) => {
-      await fetch(
-  `${API_BASE_URL}/reviews/${id}/feature`,
-        {
-          method:
-            "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      try {
+        setActionId(
+          id
+        );
 
-      loadReviews();
+        await fetch(
+          `${API_BASE_URL}/reviews/${id}/feature`,
+          {
+            method:
+              "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        loadReviews();
+      } catch {
+        setMsg(
+          "Feature update failed."
+        );
+      } finally {
+        setActionId(
+          ""
+        );
+      }
     };
+
+  /* ======================
+     Search
+  ====================== */
+  const filteredReviews =
+    useMemo(() => {
+      if (!search)
+        return reviews;
+
+      return reviews.filter(
+        (item) =>
+          item.name
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            ) ||
+          item.message
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            )
+      );
+    }, [
+      reviews,
+      search,
+    ]);
+
+  const stars = (
+    count = 5
+  ) =>
+    "⭐".repeat(
+      Number(
+        count
+      )
+    );
 
   return (
     <div className="admin-page">
       <AdminSidebar />
 
       <div className="main-content">
-        {/* Top */}
+        {/* Header */}
         <div className="topbar">
           <div>
             <h1>
@@ -99,109 +199,205 @@ function ManageReviews() {
 
             <p>
               Highlight
-              good reviews
-              or remove
-              spam
+              premium
+              feedback or
+              remove spam
             </p>
+          </div>
+
+          <div className="top-actions">
+            <input
+              type="text"
+              className="search-box"
+              placeholder="Search reviews..."
+              value={
+                search
+              }
+              onChange={(
+                e
+              ) =>
+                setSearch(
+                  e.target
+                    .value
+                )
+              }
+            />
+
+            <button
+              className="refresh-btn"
+              onClick={
+                loadReviews
+              }
+            >
+              ↻ Refresh
+            </button>
           </div>
         </div>
 
-        {/* Table */}
+        {/* Reviews */}
         <div className="booking-area">
-          <h2>
-            Customer
-            Reviews
-          </h2>
+          <div className="section-head">
+            <div>
+              <h2>
+                Customer
+                Reviews
+              </h2>
+
+              <p>
+                {
+                  filteredReviews.length
+                }{" "}
+                results
+              </p>
+            </div>
+
+            <span className="pill-count">
+              {
+                reviews.length
+              }{" "}
+              Total
+            </span>
+          </div>
 
           <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>
-                    Name
-                  </th>
-                  <th>
-                    Rating
-                  </th>
-                  <th>
-                    Message
-                  </th>
-                  <th>
-                    Actions
-                  </th>
-                </tr>
-              </thead>
+            {msg && (
+              <div className="admin-msg error">
+                {msg}
+              </div>
+            )}
 
-              <tbody>
-                {reviews.map(
-                  (
-                    item,
-                    index
-                  ) => (
-                    <tr
-                      key={
-                        index
-                      }
-                    >
-                      <td>
-                        {
-                          item.name
+            {loading ? (
+              <div className="loading-box">
+                <div className="mini-loader"></div>
+
+                <p>
+                  Loading
+                  reviews...
+                </p>
+              </div>
+            ) : filteredReviews.length ===
+              0 ? (
+              <div className="empty-box">
+                <p>
+                  No
+                  reviews
+                  found.
+                </p>
+              </div>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Name
+                    </th>
+
+                    <th>
+                      Rating
+                    </th>
+
+                    <th>
+                      Review
+                    </th>
+
+                    <th>
+                      Status
+                    </th>
+
+                    <th>
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredReviews.map(
+                    (
+                      item,
+                      index
+                    ) => (
+                      <tr
+                        key={
+                          item._id ||
+                          index
                         }
-                      </td>
-
-                      <td>
-                        {"⭐".repeat(
-                          item.rating ||
-                            5
-                        )}
-                      </td>
-
-                      <td>
-                        {
-                          item.message
-                        }
-                      </td>
-
-                      <td>
-                        <button
-                          className="feature-btn"
-                          onClick={() =>
-                            featureReview(
-                              item._id
-                            )
+                      >
+                        <td>
+                          {
+                            item.name
                           }
-                        >
-                          Feature
-                        </button>
+                        </td>
 
-                        <button
-                          className="delete-btn"
-                          onClick={() =>
-                            deleteReview(
-                              item._id
-                            )
+                        <td>
+                          {stars(
+                            item.rating ||
+                              5
+                          )}
+                        </td>
+
+                        <td className="review-text">
+                          {
+                            item.message
                           }
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
+                        </td>
 
-            {reviews.length ===
-              0 && (
-              <p
-                style={{
-                  marginTop:
-                    "15px",
-                }}
-              >
-                No reviews
-                found.
-              </p>
+                        <td>
+                          <span
+                            className={`status-pill ${
+                              item.featured
+                                ? "green"
+                                : "yellow"
+                            }`}
+                          >
+                            {item.featured
+                              ? "Featured"
+                              : "Normal"}
+                          </span>
+                        </td>
+
+                        <td>
+                          <div className="action-row">
+                            <button
+                              className="feature-btn"
+                              disabled={
+                                actionId ===
+                                item._id
+                              }
+                              onClick={() =>
+                                featureReview(
+                                  item._id
+                                )
+                              }
+                            >
+                              {actionId ===
+                              item._id
+                                ? "Updating..."
+                                : item.featured
+                                ? "Unfeature"
+                                : "Feature"}
+                            </button>
+
+                            <button
+                              className="delete-btn"
+                              disabled={
+                                actionId ===
+                                item._id
+                              }
+                              onClick={() =>
+                                deleteReview(
+                                  item._id
+                                )
+                              }
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
             )}
           </div>
         </div>

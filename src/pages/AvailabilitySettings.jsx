@@ -16,11 +16,29 @@ function AvailabilitySettings() {
       maxBookingsPerDay: 20,
     });
 
+  const [loading, setLoading] =
+    useState(true);
+
+  const [saving, setSaving] =
+    useState(false);
+
   const [msg, setMsg] =
     useState("");
 
+  const [
+    msgType,
+    setMsgType,
+  ] = useState("success");
+
+  const [
+    selectedDate,
+    setSelectedDate,
+  ] = useState("");
+
   const token =
-  localStorage.getItem("token") || "";
+    localStorage.getItem(
+      "token"
+    ) || "";
 
   const weekDays = [
     "Sunday",
@@ -33,108 +51,198 @@ function AvailabilitySettings() {
   ];
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
     loadSettings();
   }, []);
 
+  /* ======================
+     Load Settings
+  ====================== */
   const loadSettings =
     async () => {
-      const res =
-        await fetch(
-  `${API_BASE_URL}/availability`
-)
+      try {
+        setLoading(true);
 
-      const data =
-  await res.json().catch(
-    () => ({})
-  );
+        const res =
+          await fetch(
+            `${API_BASE_URL}/availability`
+          );
 
-      setForm(data);
-    };
+        const data =
+          await res
+            .json()
+            .catch(
+              () => ({})
+            );
 
-  const toggleDay =
-    (day) => {
-      if (
-        form.closedDays.includes(
-          day
-        )
-      ) {
         setForm({
-          ...form,
           closedDays:
-            form.closedDays.filter(
-              (d) =>
-                d !== day
-            ),
+            data.closedDays ||
+            [],
+          closedDates:
+            data.closedDates ||
+            [],
+          openTime:
+            data.openTime ||
+            "10:00",
+          closeTime:
+            data.closeTime ||
+            "20:00",
+          maxBookingsPerDay:
+            data.maxBookingsPerDay ||
+            20,
         });
-      } else {
-        setForm({
-          ...form,
-          closedDays: [
-            ...form.closedDays,
-            day,
-          ],
-        });
+      } catch {
+        setMsgType(
+          "error"
+        );
+
+        setMsg(
+          "Unable to load settings."
+        );
+      } finally {
+        setLoading(false);
       }
     };
 
-  const addDate =
-    (date) => {
-      if (
-        !date ||
-        form.closedDates.includes(
-          date
-        )
+  /* ======================
+     Day Toggle
+  ====================== */
+  const toggleDay = (
+    day
+  ) => {
+    const exists =
+      form.closedDays.includes(
+        day
+      );
+
+    setForm({
+      ...form,
+      closedDays:
+        exists
+          ? form.closedDays.filter(
+              (d) =>
+                d !==
+                day
+            )
+          : [
+              ...form.closedDays,
+              day,
+            ],
+    });
+  };
+
+  /* ======================
+     Add Date
+  ====================== */
+  const addDate = () => {
+    if (
+      !selectedDate ||
+      form.closedDates.includes(
+        selectedDate
       )
-        return;
+    )
+      return;
 
-      setForm({
-        ...form,
-        closedDates: [
-          ...form.closedDates,
-          date,
-        ],
-      });
-    };
+    setForm({
+      ...form,
+      closedDates: [
+        ...form.closedDates,
+        selectedDate,
+      ],
+    });
 
-  const removeDate =
-    (date) => {
-      setForm({
-        ...form,
-        closedDates:
-          form.closedDates.filter(
-            (d) =>
-              d !== date
-          ),
-      });
-    };
+    setSelectedDate(
+      ""
+    );
+  };
 
+  /* ======================
+     Remove Date
+  ====================== */
+  const removeDate = (
+    date
+  ) => {
+    setForm({
+      ...form,
+      closedDates:
+        form.closedDates.filter(
+          (d) =>
+            d !== date
+        ),
+    });
+  };
+
+  /* ======================
+     Save
+  ====================== */
   const saveSettings =
     async (e) => {
       e.preventDefault();
 
-      const res =
-        await fetch(
-  `${API_BASE_URL}/availability`,
-          {
-            method:
-              "PUT",
-            headers: {
-              "Content-Type":
-                "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(
-              form
-            ),
-          }
+      try {
+        setSaving(true);
+
+        const res =
+          await fetch(
+            `${API_BASE_URL}/availability`,
+            {
+              method:
+                "PUT",
+              headers: {
+                "Content-Type":
+                  "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(
+                form
+              ),
+            }
+          );
+
+        const data =
+          await res
+            .json()
+            .catch(
+              () => ({})
+            );
+
+        if (
+          res.ok
+        ) {
+          setMsgType(
+            "success"
+          );
+
+          setMsg(
+            data.message ||
+              "Settings saved successfully ✨"
+          );
+        } else {
+          setMsgType(
+            "error"
+          );
+
+          setMsg(
+            data.message ||
+              "Failed to save settings."
+          );
+        }
+      } catch {
+        setMsgType(
+          "error"
         );
 
-      const data =
-        await res.json();
-
-      setMsg(
-        data.message
-      );
+        setMsg(
+          "Server error."
+        );
+      } finally {
+        setSaving(false);
+      }
     };
 
   return (
@@ -142,174 +250,283 @@ function AvailabilitySettings() {
       <AdminSidebar />
 
       <div className="main-content">
+        {/* Header */}
         <div className="topbar">
           <div>
             <h1>
               Availability
               Settings
             </h1>
+
             <p>
-              Control open /
-              closed salon
-              schedule
+              Control salon
+              timings,
+              holidays &
+              booking
+              capacity
             </p>
           </div>
-        </div>
 
-        <div className="table-wrap">
-          <form
-            className="service-form"
-            onSubmit={
-              saveSettings
+          <button
+            className="refresh-btn"
+            onClick={
+              loadSettings
             }
           >
-            <h3>
-              Weekly Closed
-              Days
-            </h3>
+            ↻ Reload
+          </button>
+        </div>
 
-            <div
-              style={{
-                display:
-                  "flex",
-                gap: "10px",
-                flexWrap:
-                  "wrap",
-              }}
-            >
-              {weekDays.map(
-                (day) => (
-                  <button
-                    type="button"
-                    key={day}
-                    className={
-                      form.closedDays.includes(
-                        day
-                      )
-                        ? "delete-btn"
-                        : "feature-btn"
-                    }
-                    onClick={() =>
-                      toggleDay(
-                        day
-                      )
-                    }
-                  >
-                    {day}
-                  </button>
-                )
-              )}
-            </div>
-
-            <h3>
-              Add Closed
-              Date
-            </h3>
-
-            <input
-              type="date"
-              onChange={(e) =>
-                addDate(
-                  e.target
-                    .value
-                )
-              }
-            />
-
+        {/* Body */}
+        <div className="booking-area">
+          <div className="section-head">
             <div>
-              {form.closedDates.map(
-                (date) => (
-                  <button
-                    key={date}
-                    type="button"
-                    className="delete-btn"
-                    style={{
-                      marginRight:
-                        "8px",
-                      marginTop:
-                        "8px",
-                    }}
-                    onClick={() =>
-                      removeDate(
-                        date
-                      )
-                    }
-                  >
-                    {date}
-                  </button>
-                )
-              )}
-            </div>
+              <h2>
+                Manage
+                Schedule
+              </h2>
 
-            <h3>
-              Opening Time
-            </h3>
-
-            <input
-              type="time"
-              value={
-                form.openTime
-              }
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  openTime:
-                    e.target
-                      .value,
-                })
-              }
-            />
-
-            <h3>
-              Closing Time
-            </h3>
-
-            <input
-              type="time"
-              value={
-                form.closeTime
-              }
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  closeTime:
-                    e.target
-                      .value,
-                })
-              }
-            />
-
-            <h3>
-              Max Bookings
-              Per Day
-            </h3>
-
-            <input
-              type="number"
-              value={
-                form.maxBookingsPerDay
-              }
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  maxBookingsPerDay:
-  Number(
-    e.target.value
-  ) || 0,
-                })
-              }
-            />
-
-            <button className="book-btn">
-              Save Settings
-            </button>
-
-            {msg && (
               <p>
-                {msg}
+                Premium
+                booking
+                controls
               </p>
+            </div>
+          </div>
+
+          <div className="table-wrap luxury-form-wrap">
+            {loading ? (
+              <div className="loading-box">
+                <div className="mini-loader"></div>
+                <p>
+                  Loading
+                  settings...
+                </p>
+              </div>
+            ) : (
+              <form
+                className="service-form premium-form"
+                onSubmit={
+                  saveSettings
+                }
+              >
+                {/* Message */}
+                {msg && (
+                  <div
+                    className={`admin-msg ${
+                      msgType ===
+                      "error"
+                        ? "error"
+                        : "success"
+                    }`}
+                  >
+                    {msg}
+                  </div>
+                )}
+
+                {/* Closed Days */}
+                <div className="input-group">
+                  <label>
+                    Weekly
+                    Closed Days
+                  </label>
+
+                  <div className="chips-wrap">
+                    {weekDays.map(
+                      (
+                        day
+                      ) => (
+                        <button
+                          type="button"
+                          key={
+                            day
+                          }
+                          className={`chip-btn ${
+                            form.closedDays.includes(
+                              day
+                            )
+                              ? "active"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            toggleDay(
+                              day
+                            )
+                          }
+                        >
+                          {
+                            day
+                          }
+                        </button>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Closed Dates */}
+                <div className="input-group">
+                  <label>
+                    Special
+                    Closed
+                    Dates
+                  </label>
+
+                  <div className="date-row">
+                    <input
+                      type="date"
+                      value={
+                        selectedDate
+                      }
+                      onChange={(
+                        e
+                      ) =>
+                        setSelectedDate(
+                          e.target
+                            .value
+                        )
+                      }
+                    />
+
+                    <button
+                      type="button"
+                      className="feature-btn"
+                      onClick={
+                        addDate
+                      }
+                    >
+                      + Add
+                    </button>
+                  </div>
+
+                  <div className="chips-wrap">
+                    {form.closedDates.map(
+                      (
+                        date
+                      ) => (
+                        <button
+                          key={
+                            date
+                          }
+                          type="button"
+                          className="delete-btn"
+                          onClick={() =>
+                            removeDate(
+                              date
+                            )
+                          }
+                        >
+                          {
+                            date
+                          }
+                        </button>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Timings */}
+                <div className="grid-2">
+                  <div className="input-group">
+                    <label>
+                      Opening
+                      Time
+                    </label>
+
+                    <input
+                      type="time"
+                      value={
+                        form.openTime
+                      }
+                      onChange={(
+                        e
+                      ) =>
+                        setForm({
+                          ...form,
+                          openTime:
+                            e
+                              .target
+                              .value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="input-group">
+                    <label>
+                      Closing
+                      Time
+                    </label>
+
+                    <input
+                      type="time"
+                      value={
+                        form.closeTime
+                      }
+                      onChange={(
+                        e
+                      ) =>
+                        setForm({
+                          ...form,
+                          closeTime:
+                            e
+                              .target
+                              .value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* Capacity */}
+                <div className="input-group">
+                  <label>
+                    Max
+                    Bookings Per
+                    Day
+                  </label>
+
+                  <input
+                    type="number"
+                    min="1"
+                    value={
+                      form.maxBookingsPerDay
+                    }
+                    onChange={(
+                      e
+                    ) =>
+                      setForm({
+                        ...form,
+                        maxBookingsPerDay:
+                          Number(
+                            e
+                              .target
+                              .value
+                          ) ||
+                          0,
+                      })
+                    }
+                  />
+                </div>
+
+                {/* Submit */}
+                <button
+                  className="book-btn premium-submit"
+                  disabled={
+                    saving
+                  }
+                >
+                  {saving ? (
+                    <>
+                      <span className="mini-loader white"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Settings"
+                  )}
+                </button>
+              </form>
             )}
-          </form>
+          </div>
         </div>
       </div>
     </div>

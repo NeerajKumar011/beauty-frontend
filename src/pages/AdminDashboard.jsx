@@ -1,5 +1,9 @@
 import API_BASE_URL from "../utils/api";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import AdminSidebar from "../components/AdminSidebar";
 import "../styles/Admin.css";
 
@@ -18,16 +22,35 @@ function AdminDashboard() {
   const [loading, setLoading] =
     useState(true);
 
+  const [search, setSearch] =
+    useState("");
+
+  const [error, setError] =
+    useState("");
+
   const token =
-  localStorage.getItem("token") || "";
+    localStorage.getItem(
+      "token"
+    ) || "";
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
     loadDashboard();
   }, []);
 
+  /* ======================
+     Load Dashboard
+  ====================== */
   const loadDashboard =
     async () => {
       try {
+        setLoading(true);
+        setError("");
+
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -37,15 +60,13 @@ function AdminDashboard() {
           bookingsRes,
         ] =
           await Promise.all([
-            fetch(`${API_BASE_URL}/dashboard/summary`,
-              {
-                headers,
-              }
+            fetch(
+              `${API_BASE_URL}/dashboard/summary`,
+              { headers }
             ),
-            fetch(`${API_BASE_URL}/bookings`,
-              {
-                headers,
-              }
+            fetch(
+              `${API_BASE_URL}/bookings`,
+              { headers }
             ),
           ]);
 
@@ -55,7 +76,10 @@ function AdminDashboard() {
         const bookingsData =
           await bookingsRes.json();
 
-        setSummary(summaryData || {});
+        setSummary(
+          summaryData ||
+            {}
+        );
 
         setBookings(
           Array.isArray(
@@ -64,12 +88,123 @@ function AdminDashboard() {
             ? bookingsData
             : []
         );
-      } catch (error) {
-        console.log(error);
+      } catch {
+        setError(
+          "Unable to load dashboard data."
+        );
       } finally {
         setLoading(false);
       }
     };
+
+  /* ======================
+     Search Filter
+  ====================== */
+  const filteredBookings =
+    useMemo(() => {
+      if (!search)
+        return bookings;
+
+      return bookings.filter(
+        (item) =>
+          item.name
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            ) ||
+          item.service
+            ?.toLowerCase()
+            .includes(
+              search.toLowerCase()
+            )
+      );
+    }, [
+      bookings,
+      search,
+    ]);
+
+  /* ======================
+     Formatters
+  ====================== */
+  const formatDate = (
+    value
+  ) => {
+    if (!value)
+      return "-";
+
+    const d =
+      new Date(
+        value
+      );
+
+    if (
+      isNaN(d)
+    )
+      return value;
+
+    return d.toLocaleDateString(
+      "en-IN",
+      {
+        day: "numeric",
+        month:
+          "short",
+        year:
+          "numeric",
+      }
+    );
+  };
+
+  const formatTime = (
+    value
+  ) => {
+    if (!value)
+      return "-";
+
+    const [h, m] =
+      value.split(
+        ":"
+      );
+
+    const hour =
+      parseInt(h);
+
+    const ampm =
+      hour >= 12
+        ? "PM"
+        : "AM";
+
+    const finalHour =
+      hour % 12 ===
+      0
+        ? 12
+        : hour % 12;
+
+    return `${finalHour}:${m} ${ampm}`;
+  };
+
+  const statusClass = (
+    status
+  ) => {
+    const s =
+      (
+        status ||
+        "Pending"
+      ).toLowerCase();
+
+    if (
+      s ===
+      "confirmed"
+    )
+      return "green";
+
+    if (
+      s ===
+      "cancelled"
+    )
+      return "red";
+
+    return "yellow";
+  };
 
   return (
     <div className="admin-page">
@@ -80,28 +215,58 @@ function AdminDashboard() {
         <div className="topbar">
           <div>
             <h1>
-              Welcome Admin 👑
+              Welcome
+              Admin 👑
             </h1>
 
             <p>
               Luxury salon
-              control panel
+              control
+              center
             </p>
           </div>
 
-          <input
-            type="text"
-            className="search-box"
-            placeholder="Search..."
-          />
+          <div className="top-actions">
+            <input
+              type="text"
+              className="search-box"
+              placeholder="Search bookings..."
+              value={
+                search
+              }
+              onChange={(
+                e
+              ) =>
+                setSearch(
+                  e.target
+                    .value
+                )
+              }
+            />
+
+            <button
+              className="refresh-btn"
+              onClick={
+                loadDashboard
+              }
+            >
+              ↻ Refresh
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
         <div className="stats-grid">
-          <div className="card">
+          <div className="card stat-card pink">
+            <span className="stat-icon">
+              📅
+            </span>
+
             <h3>
-              Total Bookings
+              Total
+              Bookings
             </h3>
+
             <p>
               {
                 summary.totalBookings
@@ -109,11 +274,16 @@ function AdminDashboard() {
             </p>
           </div>
 
-          <div className="card">
+          <div className="card stat-card purple">
+            <span className="stat-icon">
+              ⏰
+            </span>
+
             <h3>
-              Today's
+              Today’s
               Appointments
             </h3>
+
             <p>
               {
                 summary.todayBookings
@@ -121,10 +291,16 @@ function AdminDashboard() {
             </p>
           </div>
 
-          <div className="card">
+          <div className="card stat-card blue">
+            <span className="stat-icon">
+              👥
+            </span>
+
             <h3>
-              Total Users
+              Total
+              Users
             </h3>
+
             <p>
               {
                 summary.totalUsers
@@ -132,10 +308,15 @@ function AdminDashboard() {
             </p>
           </div>
 
-          <div className="card">
+          <div className="card stat-card gold">
+            <span className="stat-icon">
+              ✨
+            </span>
+
             <h3>
-              Total Services
+              Services
             </h3>
+
             <p>
               {
                 summary.totalServices
@@ -144,29 +325,69 @@ function AdminDashboard() {
           </div>
         </div>
 
-        {/* Recent Bookings */}
+        {/* Booking Area */}
         <div className="booking-area">
-          <h2>
-            Recent Bookings
-          </h2>
+          <div className="section-head">
+            <div>
+              <h2>
+                Recent
+                Bookings
+              </h2>
+
+              <p>
+                Latest
+                customer
+                appointments
+              </p>
+            </div>
+
+            <span className="pill-count">
+              {
+                filteredBookings.length
+              }{" "}
+              Results
+            </span>
+          </div>
 
           <div className="table-wrap">
             {loading ? (
-              <p>
-                Loading...
-              </p>
-            ) : bookings.length ===
+              <div className="loading-box">
+                <div className="mini-loader"></div>
+                <p>
+                  Loading
+                  dashboard...
+                </p>
+              </div>
+            ) : error ? (
+              <div className="error-box">
+                <p>
+                  {error}
+                </p>
+
+                <button
+                  className="refresh-btn"
+                  onClick={
+                    loadDashboard
+                  }
+                >
+                  Retry
+                </button>
+              </div>
+            ) : filteredBookings.length ===
               0 ? (
-              <p>
-                No bookings
-                found
-              </p>
+              <div className="empty-box">
+                <p>
+                  No
+                  bookings
+                  found.
+                </p>
+              </div>
             ) : (
               <table>
                 <thead>
                   <tr>
                     <th>
-                      Name
+                      Customer
                     </th>
                     <th>
                       Service
@@ -184,8 +405,11 @@ function AdminDashboard() {
                 </thead>
 
                 <tbody>
-                  {bookings
-                    .slice(0, 8)
+                  {filteredBookings
+                    .slice(
+                      0,
+                      10
+                    )
                     .map(
                       (
                         item,
@@ -193,6 +417,7 @@ function AdminDashboard() {
                       ) => (
                         <tr
                           key={
+                            item._id ||
                             index
                           }
                         >
@@ -209,20 +434,26 @@ function AdminDashboard() {
                           </td>
 
                           <td>
-                            {
+                            {formatDate(
                               item.date
-                            }
+                            )}
                           </td>
 
                           <td>
-                            {
+                            {formatTime(
                               item.time
-                            }
+                            )}
                           </td>
 
                           <td>
-                            {item.status ||
-                              "Pending"}
+                            <span
+                              className={`status-pill ${statusClass(
+                                item.status
+                              )}`}
+                            >
+                              {item.status ||
+                                "Pending"}
+                            </span>
                           </td>
                         </tr>
                       )

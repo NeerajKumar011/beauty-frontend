@@ -1,128 +1,357 @@
-.manage-gallery-page{
-  padding:100px 35px;
-  background:#f8f9fc;
-  min-height:100vh;
+/* ==========================================
+   MANAGE GALLERY CSS
+   Premium Responsive Admin UI
+========================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+:root{
+  --pink:#ff4fa0;
+  --pink-dark:#e63d8c;
+  --pink-soft:#fff1f7;
+  --text:#141414;
+  --muted:#6f6f77;
+  --line:#ececf2;
+  --white:#ffffff;
+  --danger:#d30000;
+  --bg:#f8f9fc;
+  --shadow-sm:0 12px 28px rgba(0,0,0,.06);
+  --shadow-md:0 18px 42px rgba(0,0,0,.08);
+  --radius:20px;
 }
 
+/* ==========================================
+   RESET
+========================================== */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:"Poppins",sans-serif;
+  background:var(--bg);
+}
+
+/* ==========================================
+   PAGE
+========================================== */
+
+.manage-gallery-page{
+  min-height:100vh;
+  padding:100px 32px 50px;
+  background:
+    radial-gradient(circle at top left,#ffe0ef 0%,transparent 20%),
+    radial-gradient(circle at bottom right,#f2ddff 0%,transparent 18%),
+    var(--bg);
+}
+
+/* ==========================================
+   TOPBAR
+========================================== */
+
 .manage-gallery-top{
-  margin-bottom:30px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:18px;
+  flex-wrap:wrap;
+  margin-bottom:28px;
 }
 
 .manage-gallery-top h1{
-  font-size:34px;
-  color:#111;
+  font-size:clamp(2rem,4vw,2.5rem);
+  color:var(--text);
+  line-height:1.1;
   margin-bottom:8px;
 }
 
 .manage-gallery-top p{
-  color:#666;
+  color:var(--muted);
+  font-size:.96rem;
 }
 
+.gallery-search{
+  min-width:280px;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  outline:none;
+  font-size:.95rem;
+  background:#fff;
+}
+
+.gallery-search:focus{
+  border-color:var(--pink);
+  box-shadow:0 0 0 4px rgba(255,79,160,.12);
+}
+
+/* ==========================================
+   UPLOAD BOX
+========================================== */
+
 .upload-box{
-  background:white;
+  background:rgba(255,255,255,.96);
   padding:28px;
-  border-radius:18px;
-  box-shadow:
-  0 10px 25px rgba(0,0,0,.06);
-  max-width:500px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);
+  max-width:560px;
+  border:1px solid rgba(255,255,255,.7);
 }
 
 .upload-form{
   display:grid;
-  gap:14px;
+  gap:15px;
 }
+
+.section-head{
+  margin-bottom:4px;
+}
+
+.section-head h2{
+  font-size:1.35rem;
+  color:var(--text);
+  margin-bottom:4px;
+}
+
+.section-head p{
+  color:var(--muted);
+  font-size:.9rem;
+}
+
+/* ==========================================
+   FIELDS
+========================================== */
 
 .upload-form input,
 .upload-form select{
-  padding:14px;
-  border:1px solid #ddd;
-  border-radius:12px;
-  font-size:15px;
+  width:100%;
+  min-height:52px;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  font-size:.95rem;
   outline:none;
+  background:#fff;
 }
 
 .upload-form input:focus,
 .upload-form select:focus{
-  border-color:#ff4fa0;
+  border-color:var(--pink);
+  box-shadow:0 0 0 4px rgba(255,79,160,.10);
 }
+
+.upload-form input[type="file"]{
+  padding:12px;
+  cursor:pointer;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
 
 .upload-btn{
   border:none;
-  padding:14px;
-  border-radius:12px;
-  background:#ff4fa0;
-  color:white;
-  font-weight:600;
+  min-height:52px;
+  border-radius:14px;
+  background:linear-gradient(
+    135deg,
+    var(--pink),
+    var(--pink-dark)
+  );
+  color:#fff;
+  font-weight:700;
+  font-size:.95rem;
   cursor:pointer;
-  transition:.3s;
+  transition:.25s ease;
 }
 
-.upload-btn:hover{
-  background:#e63d8c;
+.upload-btn:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 14px 30px rgba(255,79,160,.22);
 }
+
+.upload-btn:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
+
+/* ==========================================
+   MESSAGE
+========================================== */
 
 .upload-msg{
-  color:green;
-  font-size:14px;
+  padding:12px 14px;
+  border-radius:14px;
+  font-size:.92rem;
+  font-weight:600;
 }
 
+.upload-msg.success{
+  background:#eaf8eb;
+  color:#2e7d32;
+}
+
+.upload-msg.error{
+  background:#ffeaea;
+  color:#d30000;
+}
+
+/* ==========================================
+   PREVIEW
+========================================== */
+
+.preview-img{
+  width:100%;
+  height:240px;
+  object-fit:cover;
+  border-radius:16px;
+  border:1px solid var(--line);
+}
+
+/* ==========================================
+   GRID
+========================================== */
+
 .gallery-admin-grid{
-  margin-top:40px;
+  margin-top:38px;
   display:grid;
   grid-template-columns:
-  repeat(auto-fit,minmax(240px,1fr));
+    repeat(auto-fit,minmax(250px,1fr));
   gap:22px;
 }
 
+.empty-gallery{
+  grid-column:1/-1;
+  text-align:center;
+  padding:40px 20px;
+  border-radius:20px;
+  background:#fff;
+  color:var(--muted);
+  box-shadow:var(--shadow-sm);
+}
+
+/* ==========================================
+   CARD
+========================================== */
+
 .admin-photo-card{
-  background:white;
-  border-radius:18px;
+  background:#fff;
+  border-radius:20px;
   overflow:hidden;
-  box-shadow:
-  0 12px 25px rgba(0,0,0,.06);
+  box-shadow:var(--shadow-sm);
+  transition:.25s ease;
+}
+
+.admin-photo-card:hover{
+  transform:translateY(-5px);
+  box-shadow:var(--shadow-md);
 }
 
 .admin-photo-card img{
   width:100%;
-  height:220px;
+  height:240px;
   object-fit:cover;
 }
 
 .admin-photo-info{
-  padding:14px;
+  padding:16px;
 }
 
 .admin-photo-info h4{
+  font-size:1rem;
+  color:var(--text);
   margin-bottom:6px;
-  font-size:17px;
 }
 
 .admin-photo-info span{
-  color:#ff4fa0;
-  font-size:14px;
+  display:inline-block;
+  font-size:.84rem;
+  font-weight:600;
+  color:var(--pink);
+  background:var(--pink-soft);
+  padding:6px 10px;
+  border-radius:999px;
+  margin-bottom:14px;
 }
+
+/* ==========================================
+   DELETE
+========================================== */
 
 .delete-btn{
   width:100%;
-  margin-top:12px;
   border:none;
-  padding:12px;
-  border-radius:10px;
+  min-height:46px;
+  border-radius:12px;
   background:#ffeded;
-  color:#d30000;
+  color:var(--danger);
   cursor:pointer;
-  font-weight:600;
+  font-weight:700;
+  transition:.2s ease;
 }
 
-.delete-btn:hover{
+.delete-btn:hover:not(:disabled){
   background:#ffdada;
 }
 
-.preview-img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-  border-radius:14px;
-  margin-top:10px;
-  border:1px solid #eee;
+.delete-btn:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media(max-width:768px){
+
+  .manage-gallery-page{
+    padding:92px 18px 40px;
+  }
+
+  .manage-gallery-top{
+    align-items:stretch;
+  }
+
+  .gallery-search{
+    width:100%;
+    min-width:100%;
+  }
+
+  .upload-box{
+    max-width:100%;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width:480px){
+
+  .manage-gallery-page{
+    padding:84px 14px 32px;
+  }
+
+  .upload-box{
+    padding:20px;
+    border-radius:18px;
+  }
+
+  .gallery-admin-grid{
+    gap:16px;
+  }
+
+  .admin-photo-card img,
+  .preview-img{
+    height:210px;
+  }
+
+  .upload-btn,
+  .delete-btn{
+    width:100%;
+  }
 }

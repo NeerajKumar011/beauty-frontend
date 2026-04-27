@@ -1,59 +1,186 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import {
+  useEffect,
+  useState,
+} from "react";
+import {
+  Link,
+  useLocation,
+} from "react-router-dom";
 import "../styles/Admin.css";
 
 function AdminSidebar() {
-  const [collapsed, setCollapsed] =
-  useState(
-    localStorage.getItem(
-      "adminSidebarCollapsed"
-    ) === "true"
-  );
-
   const location =
     useLocation();
 
+  const [collapsed, setCollapsed] =
+    useState(
+      localStorage.getItem(
+        "adminSidebarCollapsed"
+      ) === "true"
+    );
+
+  const [mobileOpen, setMobileOpen] =
+    useState(false);
+
+  /* ======================
+     Close mobile on route
+  ====================== */
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [
+    location.pathname,
+  ]);
+
+  /* ======================
+     Logout
+  ====================== */
   const logout = () => {
-    localStorage.removeItem("token");
-localStorage.removeItem("user");
-localStorage.removeItem("selectedService");
+    localStorage.removeItem(
+      "token"
+    );
+
+    localStorage.removeItem(
+      "user"
+    );
+
+    localStorage.removeItem(
+      "selectedService"
+    );
+
     window.location.href =
-  "/login";
-setTimeout(() => {
-  window.location.reload();
-}, 100);
+      "/login";
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
-  const isActive = (path) =>
-  location.pathname === path ||
-  location.pathname.startsWith(path + "/");
+  /* ======================
+     Active Route
+  ====================== */
+  const isActive = (
+    path
+  ) =>
+    location.pathname ===
+      path ||
+    location.pathname.startsWith(
+      path + "/"
+    );
+
+  /* ======================
+     Collapse Toggle
+  ====================== */
+  const toggleCollapse =
+    () => {
+      const next =
+        !collapsed;
+
+      setCollapsed(
+        next
+      );
+
+      localStorage.setItem(
+        "adminSidebarCollapsed",
+        next
+      );
+    };
+
+  /* ======================
+     Menu Items
+  ====================== */
+  const links = [
+    {
+      to: "/dashboard",
+      icon: "📊",
+      label:
+        "Dashboard",
+    },
+    {
+      to: "/manage-bookings",
+      icon: "📅",
+      label:
+        "Bookings",
+    },
+    {
+      to: "/booking-calendar",
+      icon: "🗓️",
+      label:
+        "Calendar",
+    },
+    {
+      to: "/availability-settings",
+      icon: "🕒",
+      label:
+        "Availability",
+    },
+    {
+      to: "/manage-users",
+      icon: "👥",
+      label:
+        "Users",
+    },
+    {
+      to: "/manage-services",
+      icon: "💅",
+      label:
+        "Services",
+    },
+    {
+      to: "/add-service",
+      icon: "➕",
+      label:
+        "Add Service",
+    },
+    {
+      to: "/manage-gallery",
+      icon: "🖼️",
+      label:
+        "Gallery",
+    },
+    {
+      to: "/manage-reviews",
+      icon: "⭐",
+      label:
+        "Reviews",
+    },
+    {
+      to: "/analytics",
+      icon: "📈",
+      label:
+        "Analytics",
+    },
+    {
+      to: "/",
+      icon: "🏠",
+      label:
+        "Homepage",
+    },
+  ];
 
   return (
-    <aside
-      className={`admin-sidebar ${
-        collapsed
-          ? "collapsed"
-          : ""
-      }`}
-    >
-      {/* Top */}
-      <div className="sidebar-top">
-        <h2 className="brand-title">
-          {collapsed
-            ? "💄"
-            : "💄 Admin Panel"}
+    <>
+      {/* Mobile Topbar */}
+      <div className="admin-mobile-bar">
+        <button
+          className="mobile-menu-btn"
+          onClick={() =>
+            setMobileOpen(
+              !mobileOpen
+            )
+          }
+        >
+          ☰
+        </button>
+
+        <h2>
+          💄 Admin
         </h2>
 
         <button
-          className="collapse-btn"
-          onClick={() => {
-  const next = !collapsed;
-  setCollapsed(next);
-  localStorage.setItem(
-    "adminSidebarCollapsed",
-    next
-  );
-}}
+          className="collapse-btn mobile-hide"
+          onClick={
+            toggleCollapse
+          }
         >
           {collapsed
             ? "➡"
@@ -61,140 +188,100 @@ setTimeout(() => {
         </button>
       </div>
 
-      {/* Links */}
-      <nav className="sidebar-links">
-        <Link
-          to="/dashboard"
-          className={
-            isActive(
-              "/dashboard"
+      {/* Overlay */}
+      {mobileOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() =>
+            setMobileOpen(
+              false
             )
-              ? "active"
-              : ""
           }
-        >
-          📊
-          {!collapsed &&
-            " Dashboard"}
-        </Link>
+        ></div>
+      )}
 
-        <Link
-          to="/manage-bookings"
-          className={
-            isActive(
-              "/manage-bookings"
-            )
-              ? "active"
-              : ""
-          }
-        >
-          📅
-          {!collapsed &&
-            " Bookings"}
-        </Link>
-        
-        <Link to="/booking-calendar">
-            📅 Calendar
-            </Link>
-        <Link to="/availability-settings">
-        🕒 Availability
-        </Link>
-
-        <Link
-          to="/manage-users"
-          className={
-            isActive(
-              "/manage-users"
-            )
-              ? "active"
-              : ""
-          }
-        >
-          👥
-          {!collapsed &&
-            " Users"}
-        </Link>
-
-        <Link
-          to="/manage-services"
-          className={
-            isActive(
-              "/manage-services"
-            )
-              ? "active"
-              : ""
-          }
-        >
-          💅
-          {!collapsed &&
-            " Services"}
-        </Link>
-
-        <Link
-          to="/manage-reviews"
-          className={
-            isActive(
-              "/manage-reviews"
-            )
-              ? "active"
-              : ""
-          }
-        >
-          ⭐
-          {!collapsed &&
-            " Reviews"}
-        </Link>
-
-        <Link
-          to="/analytics"
-          className={
-            isActive(
-              "/analytics"
-            )
-              ? "active"
-              : ""
-          }
-        >
-          📈
-          {!collapsed &&
-            " Analytics"}
-        </Link>
-
-        <Link
-          to="/add-service"
-          className={
-            isActive(
-              "/add-service"
-            )
-              ? "active"
-              : ""
-          }
-        >
-          ➕
-          {!collapsed &&
-            " Add Service"}
-        </Link>
-        <Link to="/manage-gallery">
-          Manage Gallery
-        </Link>
-
-        <Link to="/">
-          🏠
-          {!collapsed &&
-            " Homepage"}
-        </Link>
-      </nav>
-
-      {/* Bottom */}
-      <button
-        className="sidebar-logout"
-        onClick={logout}
+      {/* Sidebar */}
+      <aside
+        className={`admin-sidebar ${
+          collapsed
+            ? "collapsed"
+            : ""
+        } ${
+          mobileOpen
+            ? "show-mobile"
+            : ""
+        }`}
       >
-        🚪
-        {!collapsed &&
-          " Logout"}
-      </button>
-    </aside>
+        {/* Top */}
+        <div className="sidebar-top">
+          <h2 className="brand-title">
+            {collapsed
+              ? "💄"
+              : "💄 Admin Panel"}
+          </h2>
+
+          <button
+            className="collapse-btn"
+            onClick={
+              toggleCollapse
+            }
+          >
+            {collapsed
+              ? "➡"
+              : "⬅"}
+          </button>
+        </div>
+
+        {/* Links */}
+        <nav className="sidebar-links">
+          {links.map(
+            (
+              item
+            ) => (
+              <Link
+                key={
+                  item.to
+                }
+                to={
+                  item.to
+                }
+                className={
+                  isActive(
+                    item.to
+                  )
+                    ? "active"
+                    : ""
+                }
+              >
+                <span className="nav-icon">
+                  {
+                    item.icon
+                  }
+                </span>
+
+                {!collapsed && (
+                  <span>
+                    {
+                      item.label
+                    }
+                  </span>
+                )}
+              </Link>
+            )
+          )}
+        </nav>
+
+        {/* Bottom */}
+        <button
+          className="sidebar-logout"
+          onClick={logout}
+        >
+          🚪
+          {!collapsed &&
+            " Logout"}
+        </button>
+      </aside>
+    </>
   );
 }
 
